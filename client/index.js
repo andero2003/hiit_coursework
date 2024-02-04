@@ -3,7 +3,9 @@ async function connectToPolarH10() {
         console.log('Requesting Bluetooth Device...');
         const device = await navigator.bluetooth.requestDevice({
             // filters for devices that should be paired with
-            acceptAllDevices: true,
+            filters: [
+                { services: ['heart_rate'] },
+            ],
         });
 
         console.log('Connecting to the GATT Server...');
@@ -16,7 +18,13 @@ async function connectToPolarH10() {
         const characteristic = await service.getCharacteristic('heart_rate_measurement');
 
         // Add event listener to listen for when the heart rate measurement changes
-        characteristic.addEventListener('characteristicvaluechanged', handleHeartRateMeasurement);
+        characteristic.addEventListener('characteristicvaluechanged', (event) => {
+            const value = event.target.value;
+            console.log(value);
+
+            const display = document.getElementById('displayBpm');
+            display.textContent = `Heart rate: ${value.getUint8(1)}`;
+        });
 
         console.log('Starting Notifications...');
         await characteristic.startNotifications();

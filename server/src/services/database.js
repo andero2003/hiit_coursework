@@ -91,9 +91,9 @@ function getActivitiesForWorkout(id) {
     });
 }
 
-function createWorkout(name) {
+function createWorkout(name, description = 'No description') {
     return new Promise((resolve, reject) => {
-        db.run(`INSERT INTO workout (name) VALUES (?);`, [name], (err) => {
+        db.run(`INSERT INTO workout (name, description) VALUES (?, ?);`, [name, description], (err) => {
             if (err) {
                 reject(err);
             }

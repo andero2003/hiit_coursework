@@ -22,8 +22,8 @@ workoutRouter.get('/:id', async (req, res) => {
 });
 
 // Create new workout
-workoutRouter.post('/', async (req, res) => {
-    const status = await database.createWorkout(req.body.name);
+workoutRouter.post('/', express.json(), async (req, res) => {
+    const status = await database.createWorkout(req.body.name, req.body.description);
     res.json(status);
 });
 

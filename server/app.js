@@ -1,8 +1,8 @@
-const express = require("express");
+import express from 'express';
+import * as database from './src/services/database.js';
+
 const app = express();
 const port = 8080;
-
-const database = require('./src/services/database');
 
 const workoutRouter = express.Router();
 app.use('/workout', workoutRouter);

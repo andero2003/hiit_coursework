@@ -74,10 +74,12 @@ addWorkout.addEventListener('click', async () => {
         },
     );
 
+    const workoutData = await newWorkout.json();
+    
     const activities = await fetch(
-        `/workout/${newWorkout.id}`,
+        `/workout/${workoutData.id}`,
     );
     const activitiesData = await activities.json();
-    const workoutDiv = addWorkoutElement(newWorkout, activitiesData.activities);
+    const workoutDiv = addWorkoutElement(workoutData, activitiesData.activities);
     workoutsList.append(workoutDiv);
 });

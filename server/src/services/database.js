@@ -111,10 +111,11 @@ export async function createWorkout(name, description = 'No description') {
 }
 
 export async function createActivity(name, description, duration) {
+    console.log(name, description, duration);
     const db = await dbConn;
     const id = uuid();
     await db.run(`INSERT INTO activity (id, name, description, duration) VALUES (?, ?, ?, ?);`, [id, name, description, duration]);
-    
+
     return {
         id,
         name,

@@ -28,10 +28,11 @@ workoutRouter.post('/', express.json(), async (req, res) => {
 });
 
 // Add activity to workout
-workoutRouter.post('/:id/activity', async (req, res) => {
-    const activity = await database.createActivity(req.body.name, req.body.description, req.body.duration);
+workoutRouter.post('/:id/activity', express.json(), async (req, res) => {
+    const data = req.body;
+    const activity = await database.createActivity(data.name, data.description, data.duration);
     const status = await database.addActivityToWorkout(req.params.id, activity.id);
-    res.json(status);
+    res.json(activity);
 });
 
 // Remove activity from workout

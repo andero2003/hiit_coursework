@@ -1,15 +1,25 @@
-.workout {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 20px;
-    margin-bottom: 20px;
-    background-color: #dadada;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+* {
+    font-family: 'Gill Sans', sans-serif;
 }
 
-.workout button {
-    margin-top: 10px;
-    padding: 10px;
+body>h1 {
+    padding-top: 20px;
+    padding-left: 20px;
+}
+
+#workouts {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+button {
+    margin-left: 20px;
+    background-color: #005cc5;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
 }

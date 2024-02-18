@@ -1,0 +1,18 @@
+* {
+    font-family: 'Gill Sans', sans-serif;
+}
+
+div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #c5003b;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}

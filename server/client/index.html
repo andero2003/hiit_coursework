@@ -5,17 +5,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script defer src="index.js"></script>
     <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
-    <h1>Hi everyone</h1>
-    <h2>My Workouts</h2>
-    <div id="workouts">
-        <div class="workout">
-            <button id="addWorkout">Add New Workout</button>
+    <template id="activity-template">
+        <link rel="stylesheet" href="components/ActivityElement.css" />
+        <div>
+            <p id="name"></p>
+            <p id="description"></p>
+            <p id="duration"></p>
+            <button id="deleteActivity">Remove</button>
         </div>
+    </template>
+    <script defer src="components/ActivityElement.js"></script>
+    <template id="workout-template">
+        <link rel="stylesheet" href="components/WorkoutElement.css" />
+        <div>
+            <header>
+                <h2></h2>
+                <button id="deleteWorkout">Delete workout</button>
+            </header>
+            <p></p>
+            <div id="activitiesList"></div>
+            <button id="addActivity">Add activity</button>
+        </div>
+    </template>
+    <script defer src="components/WorkoutElement.js"></script>
+    <script defer src="index.js"></script>
+
+    <h1>My Workouts</h1>
+    <button id="addWorkout">Add Workout</button>
+    <div id="workouts">
     </div>
 </body>
 

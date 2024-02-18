@@ -1,0 +1,35 @@
+* {
+    font-family: 'Gill Sans', sans-serif;
+}
+
+div {
+    padding: 5px 20px 20px 20px;
+    margin-bottom: 20px;
+    background-color: #dadada;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header button {
+    background-color: #c5003b;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+div>button {
+    background-color: #005cc5;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}

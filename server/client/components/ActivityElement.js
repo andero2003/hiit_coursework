@@ -10,7 +10,12 @@ class ActivityElement extends HTMLElement {
     connectedCallback() {
         this.shadowRoot.querySelector('#name').textContent = this.getAttribute('name');
         this.shadowRoot.querySelector('#description').textContent = this.getAttribute('description');
-        this.shadowRoot.querySelector('#duration').textContent = `${this.getAttribute('duration')} sec`;
+
+        const durationAsDate = new Date(this.getAttribute('duration') * 1000)
+        const minutes = String(durationAsDate.getMinutes()).padStart(2, '0');
+        const seconds = String(durationAsDate.getSeconds()).padStart(2, '0');
+     
+        this.shadowRoot.querySelector('#duration').textContent = `${minutes}:${seconds}`;
 
         const deleteActivity = this.shadowRoot.querySelector('#deleteActivity');
         deleteActivity.addEventListener('click', async () => {

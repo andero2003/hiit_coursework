@@ -2,10 +2,25 @@
     font-family: 'Gill Sans', sans-serif;
 }
 
-div {
+header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+
+}
+
+div {
+    background-color: #dadada;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+    margin-left: 10px;
+}
+
+p {
+    margin-left: 10px;
+    padding-bottom: 20px;
 }
 
 button {
@@ -15,4 +30,5 @@ button {
     padding: 10px 15px;
     border-radius: 10px;
     cursor: pointer;
+    margin: 5px;
 }

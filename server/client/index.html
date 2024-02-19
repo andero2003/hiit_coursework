@@ -12,16 +12,18 @@
     <template id="activity-template">
         <link rel="stylesheet" href="components/ActivityElement.css" />
         <div>
-            <p id="name"></p>
+            <header>
+                <h3 id="name"></h3>
+                <h4 id="duration"></h4>
+                <button id="deleteActivity">Remove</button>
+            </header>
             <p id="description"></p>
-            <p id="duration"></p>
-            <button id="deleteActivity">Remove</button>
         </div>
     </template>
     <script defer src="components/ActivityElement.js"></script>
     <template id="workout-template">
         <link rel="stylesheet" href="components/WorkoutElement.css" />
-        <div>
+        <div class="workout">
             <header>
                 <h2></h2>
                 <button id="deleteWorkout">Delete workout</button>
@@ -37,6 +39,7 @@
     <h1>My Workouts</h1>
     <button id="addWorkout">Add Workout</button>
     <div id="workouts">
+
     </div>
 </body>
 

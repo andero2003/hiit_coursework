@@ -128,7 +128,7 @@ export async function createActivity(name, description, duration) {
 export async function addActivityToWorkout(workoutId, activityId) {
     const db = await dbConn;
     const order = await db.get(`SELECT MAX("order") as max FROM workout_activity WHERE workout_id = ?;`, workoutId);
-    await db.run(`INSERT INTO workout_activity (workout_id, activity_id, "order") VALUES (?, ?, ?);`, [workoutId, activityId, order]);
+    await db.run(`INSERT INTO workout_activity (workout_id, activity_id, "order") VALUES (?, ?, ?);`, [workoutId, activityId, order + 1]);
     return 'Success';
 }
 

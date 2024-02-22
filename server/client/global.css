@@ -22,3 +22,10 @@ input {
     border-radius: 5px;
     border: 1px solid #dadada;
 }
+
+.card {
+    padding: 10px;
+    background-color: #dadada;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}

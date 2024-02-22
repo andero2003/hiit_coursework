@@ -2,22 +2,35 @@
     font-family: 'Gill Sans', sans-serif;
 }
 
-.workout {
-    padding: 5px 20px 20px 20px;
-    margin-bottom: 20px;
-    background-color: #dadada;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+h1,
+h2,
+p {
+    margin-left: 4px;
+}
+
+/* Form stuff */
+
+form {
+    margin-top: 12px;
+}
+
 form>input {
     display: block;
     margin-top: 8px;
     margin-bottom: 8px;
+}
+
+form>div {
+    display: flex;
+    align-items: center;
+}
+
+form>div>label {
+    margin-left: 10px;
 }

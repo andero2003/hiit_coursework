@@ -8,12 +8,6 @@ header {
 
 }
 
-div {
-    background-color: #dadada;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
 h3 {
     margin-left: 10px;
 }
@@ -25,4 +19,10 @@ p {
 
 #deleteActivity {
     margin: 10px;
+}
+
+.activity.card {
+    background-color: rgb(187, 187, 187);
+    margin-top: 8px;
+    margin-bottom: 8px;
 }

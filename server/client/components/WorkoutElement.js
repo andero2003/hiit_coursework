@@ -30,6 +30,12 @@ class WorkoutElement extends HTMLElement {
             createActivityForm.hidden = !createActivityForm.hidden;
         });
 
+        const durationSlider = this.shadowRoot.querySelector('#activityDuration');
+        const durationOutput = this.shadowRoot.querySelector('#durationValue');
+        durationSlider.addEventListener('input', () => {
+            durationOutput.textContent = durationSlider.value;
+        });
+
         const workoutId = this.getAttribute('id');
         const submitActivity = this.shadowRoot.querySelector('#submitActivity');
         submitActivity.addEventListener('click', this.addActivity.bind(this));

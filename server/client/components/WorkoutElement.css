@@ -16,20 +16,8 @@ header {
     align-items: center;
 }
 
-header button {
-    background-color: #c5003b;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-div>button {
-    background-color: #005cc5;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 10px;
-    cursor: pointer;
+form>input {
+    display: block;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }

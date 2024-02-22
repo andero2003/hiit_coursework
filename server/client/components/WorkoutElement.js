@@ -24,9 +24,15 @@ class WorkoutElement extends HTMLElement {
             activitiesList.append(activityItem);
         }
 
+        const addActivityButton = this.shadowRoot.querySelector('#addActivity');
+        const createActivityForm = this.shadowRoot.querySelector('#createActivityForm');
+        addActivityButton.addEventListener('click', () => {
+            createActivityForm.hidden = !createActivityForm.hidden;
+        });
+
         const workoutId = this.getAttribute('id');
-        const addActivity = this.shadowRoot.querySelector('#addActivity');
-        addActivity.addEventListener('click', this.addActivity.bind(this));
+        const submitActivity = this.shadowRoot.querySelector('#submitActivity');
+        submitActivity.addEventListener('click', this.addActivity.bind(this));
 
         const deleteButton = this.shadowRoot.querySelector('#deleteWorkout');
         deleteButton.addEventListener('click', async () => {
@@ -41,11 +47,12 @@ class WorkoutElement extends HTMLElement {
     }
 
     async addActivity() {
-        const name = prompt('Enter activity name');
+        const createActivityForm = this.shadowRoot.querySelector('#createActivityForm');
+        const name = createActivityForm.querySelector('#activityName').value;
         if (!name) return;
-        const description = prompt('Enter activity description');
+        const description = createActivityForm.querySelector('#activityDescription').value;
         if (!description) return;
-        let duration = prompt('Enter activity duration');
+        let duration = createActivityForm.querySelector('#activityDuration').value;
         duration = parseInt(duration);
         console.log(duration);
         if (!duration) return;

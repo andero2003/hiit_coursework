@@ -23,12 +23,6 @@ p {
     padding-bottom: 20px;
 }
 
-button {
-    background-color: #c5003b;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 10px;
-    cursor: pointer;
-    margin: 5px;
+#deleteActivity {
+    margin: 10px;
 }

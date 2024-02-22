@@ -7,6 +7,10 @@ body>h1 {
     padding-left: 20px;
 }
 
+#createWorkoutForm {
+    padding-top: 10px;
+}
+
 #workouts {
     padding: 20px;
     display: grid;
@@ -14,12 +18,6 @@ body>h1 {
     gap: 20px;
 }
 
-button {
+#newWorkoutHeader {
     margin-left: 20px;
-    background-color: #005cc5;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 10px;
-    cursor: pointer;
 }

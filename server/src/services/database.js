@@ -26,7 +26,8 @@ async function init() {
     await db.exec(`CREATE TABLE IF NOT EXISTS workout_activity (
         workout_id TEXT,
         activity_id TEXT,
-        PRIMARY KEY (workout_id, activity_id)
+        "order" INTEGER,
+        PRIMARY KEY (workout_id, activity_id, "order")
     );`);
 
     return db;
@@ -126,18 +127,30 @@ export async function createActivity(name, description, duration) {
 
 export async function addActivityToWorkout(workoutId, activityId) {
     const db = await dbConn;
-    await db.run(`INSERT INTO workout_activity (workout_id, activity_id) VALUES (?, ?);`, [workoutId, activityId]);
+    const order = await db.get(`SELECT MAX("order") as max FROM workout_activity WHERE workout_id = ?;`, workoutId);
+    await db.run(`INSERT INTO workout_activity (workout_id, activity_id, "order") VALUES (?, ?, ?);`, [workoutId, activityId, order]);
     return 'Success';
 }
 
 export async function removeActivityFromWorkout(workoutId, activityId) {
     const db = await dbConn;
+    const { order } = await db.get(`SELECT "order" FROM workout_activity WHERE workout_id = ? AND activity_id = ?;`, [workoutId, activityId]);
+
     await db.run(`DELETE FROM workout_activity WHERE workout_id = ? AND activity_id = ?;`, [workoutId, activityId]);
+   
+    await db.run(`UPDATE workout_activity SET "order" = "order" - 1 WHERE workout_id = ? AND "order" > ?;`, [workoutId, order]);
+
     return 'Success';
 }
 
 export async function deleteActivity(id) {
     const db = await dbConn;
+
+    const workouts = await db.all(`SELECT workout_id FROM workout_activity WHERE activity_id = ?;`, id);
+    for (const workout of workouts) {
+        await removeActivityFromWorkout(workout.workout_id, id);
+    }
+
     await db.run(`DELETE FROM activity WHERE id = ?;`, id);
     return 'Success';
 }

@@ -1,0 +1,24 @@
+button {
+    background-color: #005cc5;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.cancel-button {
+    background-color: #c5003b;
+    color: white;
+}
+
+.confirm-button {
+    background-color: #00c500;
+    color: white;
+}
+
+input {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #dadada;
+}

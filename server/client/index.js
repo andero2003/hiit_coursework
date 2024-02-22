@@ -1,5 +1,6 @@
 const workoutsList = document.querySelector('#workouts');
-const addWorkout = document.querySelector('#addWorkout');
+const addWorkoutButton = document.querySelector('#addWorkout');
+const workoutForm = document.querySelector('#createWorkoutForm');
 
 function addWorkoutElement(workout, activities) {
     const workoutElement = document.createElement('workout-element');
@@ -30,10 +31,15 @@ async function fetchWorkouts() {
 
 fetchWorkouts();
 
-addWorkout.addEventListener('click', async () => {
-    const name = prompt('Enter workout name');
+addWorkoutButton.addEventListener('click', () => {
+    workoutForm.hidden = !workoutForm.hidden;
+});
+
+const submitWorkout = document.querySelector('#submitWorkout');
+submitWorkout.addEventListener('click', async () => {
+    const name = workoutForm.querySelector('#workoutName').value;
     if (!name) return;
-    const description = prompt('Enter workout description');
+    const description = workoutForm.querySelector('#workoutDescription').value;
     if (!description) return;
     const newWorkout = await fetch(
         '/workout/',

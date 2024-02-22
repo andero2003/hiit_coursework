@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="navigation.css">
     <link rel="stylesheet" href="global.css">
 </head>
 
@@ -48,18 +48,39 @@
     <script defer src="components/WorkoutElement.js"></script>
     <script defer src="index.js"></script>
 
-    <h1>My Workouts</h1>
-    <div id="newWorkoutHeader">
-        <button id="addWorkout">Add Workout</button>
-        <form id="createWorkoutForm" autocomplete="off" hidden>
-            <input type="text" id="workoutName" placeholder="Workout name">
-            <input type="text" id="workoutDescription" placeholder="Workout description">
-            <button id="submitWorkout" class="confirm-button">Create</button>
-        </form>
-    </div>
-    <div id="workouts">
+    <nav id="sidebar">
+        <button id="showWorkouts">
+            <img src="./assets/Dumbbell 64.png" />
+            Workouts
+        </button>
+        <button id="showActivities">
+            <img src="./assets/Strong Arm 64.png" />
+            Activities
+        </button>
+    </nav>
+    <button id="toggleSidebar">
+        Toggle Sidebar
+    </button>
 
-    </div>
+    <section id="workoutsPage">
+        <h1>Workouts</h1>
+        <hr>
+        <div id="newWorkoutHeader">
+            <button id="addWorkout">Add Workout</button>
+            <form id="createWorkoutForm" autocomplete="off" hidden>
+                <input type="text" id="workoutName" placeholder="Workout name">
+                <input type="text" id="workoutDescription" placeholder="Workout description">
+                <button id="submitWorkout" class="confirm-button">Create</button>
+            </form>
+        </div>
+        <div id="workouts">
+
+        </div>
+    </section>
+    <section id="activitiesPage" hidden>
+        <h1>Activities</h1>
+        <hr>
+    </section>
 </body>
 
 </html>

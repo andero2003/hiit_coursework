@@ -1,0 +1,73 @@
+#sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    padding: 12px 12px;
+    background-color: #08070f;
+    overflow-x: hidden;
+    transition: 0.25s;
+}
+
+#sidebar button {
+    text-decoration: none;
+    width: 100%;
+    font-size: 25px;
+    background-color: #3b384d;
+    color: #ffffff;
+    display: flex;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+#sidebar button img {
+    width: 32px;
+    margin-right: 10px;
+}
+
+#sidebar button:hover {
+    background-color: #262531;
+    color: #ffffff;
+}
+
+section {
+    margin-left: 250px;
+    padding-left: 28px;
+    transition: margin-left .25s;
+}
+
+section>h1 {
+    font-size: 32px;
+}
+
+section>hr {
+    border: 1px dashed #dadada;
+}
+
+#toggleSidebar {
+    background-color: #08070f;
+    position: fixed;
+    z-index: 1;
+    bottom: 8px;
+    left: 278px;
+    transition: 0.25s;
+    font-size: 18px;
+}
+
+/* Form stuff TODO remove from this file */
+
+#createWorkoutForm {
+    padding-top: 10px;
+}
+
+#workouts {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}

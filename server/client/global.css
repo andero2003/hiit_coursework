@@ -1,3 +1,7 @@
+* {
+    font-family: 'Trebuchet MS', sans-serif;
+}
+
 button {
     background-color: #005cc5;
     color: white;
@@ -5,6 +9,15 @@ button {
     padding: 10px 15px;
     border-radius: 10px;
     cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+button:hover {
+    transform: scale(1.04);
+}
+
+button:active {
+    transform: scale(0.98);
 }
 
 .cancel-button {

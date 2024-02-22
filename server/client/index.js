@@ -61,3 +61,37 @@ submitWorkout.addEventListener('click', async () => {
     const workoutDiv = addWorkoutElement(workoutData, activitiesData.activities);
     workoutsList.append(workoutDiv);
 });
+
+function setupNavigation() {
+    const workoutsPage = document.querySelector('#workoutsPage');
+    const activitiesPage = document.querySelector('#activitiesPage');
+
+    const showWorkouts = document.querySelector('#showWorkouts');
+    showWorkouts.addEventListener('click', () => {
+        workoutsPage.hidden = false;
+        activitiesPage.hidden = true;
+    });
+
+    const showActivities = document.querySelector('#showActivities');
+    showActivities.addEventListener('click', () => {
+        workoutsPage.hidden = true;
+        activitiesPage.hidden = false;
+    });
+
+    let sidebarStatus = true;
+    const toggleSidebar = document.querySelector('#toggleSidebar');
+    toggleSidebar.addEventListener('click', () => {
+        sidebarStatus = !sidebarStatus;
+        console.log(sidebarStatus);
+        const sections = document.querySelectorAll('section');
+        const sidebar = document.querySelector('#sidebar');
+        sidebar.style.width = sidebarStatus ? '250px' : '0px';
+        sidebar.style.padding = sidebarStatus ? '12px 12px' : '12px 0px';
+        for (const section of sections) {
+            section.style.marginLeft = sidebarStatus ? '250px' : '0px';
+        }
+        toggleSidebar.style.left = sidebarStatus ? '280px' : '10px';
+    });
+}
+
+setupNavigation();

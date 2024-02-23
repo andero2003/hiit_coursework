@@ -4,6 +4,8 @@ class WorkoutElement extends HTMLElement {
         const template = document.getElementById('workout-template');
         const templateContent = template.content;
 
+        this.displayAddList = false;
+
         this.attachShadow({ mode: 'open' }).appendChild(templateContent.cloneNode(true));
     }
 
@@ -11,23 +13,15 @@ class WorkoutElement extends HTMLElement {
         this.shadowRoot.querySelector('h2').textContent = this.getAttribute('name');
         this.shadowRoot.querySelector('p').textContent = this.getAttribute('description') || 'No description';
 
-        console.log(this.activities.length);
-
         const activitiesList = this.shadowRoot.querySelector('#activitiesList');
         for (const activity of this.activities) {
-            const activityItem = document.createElement('activity-element');
-            activityItem.setAttribute('name', activity.name);
-            activityItem.setAttribute('description', activity.description);
-            activityItem.setAttribute('duration', activity.duration);
-            activityItem.setAttribute('workoutId', this.getAttribute('id'));
-            activityItem.setAttribute('activityId', activity.id);
-            activitiesList.append(activityItem);
+            this.addActivity(activity);
         }
 
         const deleteButton = this.shadowRoot.querySelector('#deleteWorkout');
         deleteButton.addEventListener('click', async () => {
             const status = await fetch(
-                `/workout/${workoutId}`,
+                `/workout/${this.getAttribute('id')}`,
                 {
                     method: 'DELETE',
                 },
@@ -35,10 +29,82 @@ class WorkoutElement extends HTMLElement {
             this.remove();
         });
 
+        const addActivityList = this.shadowRoot.querySelector('#addActivityList');
         const addActivityToWorkoutButton = this.shadowRoot.querySelector('#addActivityToWorkout');
-        addActivityToWorkoutButton.addEventListener('click', () => {
-
+        addActivityToWorkoutButton.addEventListener('click', async () => {
+            this.displayAddList = !this.displayAddList;
+            addActivityList.style.display = this.displayAddList ? 'block' : 'none';
+            const activities = await fetch('/activity');
+            const activitiesData = await activities.json();
+            this.updateAddActivitiesList(activitiesData);
         });
+    }
+
+    addActivity(activity) {
+        const activitiesList = this.shadowRoot.querySelector('#activitiesList');
+        const activityItem = document.createElement('activity-list-element');
+        activityItem.setAttribute('activityId', activity.id);
+        activityItem.setAttribute('name', activity.name);
+
+        activitiesList.append(activityItem);
+
+        const deleteButton = activityItem.shadowRoot.querySelector('#removeActivityFromWorkout');
+        deleteButton.addEventListener('click', async () => {
+            const status = await fetch(
+                `/workout/${this.getAttribute('id')}/activity/${activity.id}`,
+                {
+                    method: 'DELETE',
+                },
+            );
+            this.activities = this.activities.filter((a) => a.id !== activity.id);
+            activityItem.remove();
+        });
+    }
+
+    removeActivity(activityId) {
+        const activitiesList = this.shadowRoot.querySelector('#activitiesList');
+        for (const activity of activitiesList.children) {
+            if (activity.getAttribute('activityId') === activityId) {
+                activity.remove();
+            }
+        }
+    }
+
+    updateAddActivitiesList(allActivities) {
+        console.log(allActivities)
+        const addActivityList = this.shadowRoot.querySelector('#addActivityList');
+        addActivityList.replaceChildren();
+        let atLeastOneActivity = false;
+        for (const activity of allActivities) {
+            if (this._activities.find((a) => a.id === activity.id)) { continue; };
+            atLeastOneActivity = true;
+            const activityItem = document.createElement('button')
+            activityItem.textContent = activity.name;
+            addActivityList.append(activityItem);
+
+            activityItem.addEventListener('click', async () => {
+                addActivityList.style.display = 'none';
+                this.displayAddList = false;
+
+                try {
+                    const status = await fetch(
+                        `/workout/${this.getAttribute('id')}/activity/${activity.id}`,
+                        {
+                            method: 'POST',
+                        },
+                    );
+                    this.activities = [...this.activities, activity];
+                    this.addActivity(activity);
+                } catch (e) {
+                    console.log(e);
+                }
+            });
+        }
+        if (!atLeastOneActivity) {
+            const noActivities = document.createElement('p');
+            noActivities.textContent = 'No activities available to add';
+            addActivityList.append(noActivities);
+        }
     }
 
     get activities() {

@@ -14,3 +14,18 @@ p {
     margin-left: 4px;
 }
 
+#activitiesList {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+#addActivityList {
+    display: none;
+    margin-top: 8px;
+}
+
+#addActivityList>button {
+    margin-top: 8px;
+    width: 100%;
+    display: block;
+}

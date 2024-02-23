@@ -49,10 +49,9 @@ workoutRouter.post('/', express.json(), async (req, res) => {
 });
 
 // Add activity to workout
-workoutRouter.post('/:id/activity', express.json(), async (req, res) => {
+workoutRouter.post('/:workoutId/activity/:activityId', express.json(), async (req, res) => {
     const data = req.body;
-    const activity = await database.createActivity(data.name, data.description, data.duration);
-    const status = await database.addActivityToWorkout(req.params.id, activity.id);
+    const activity = await database.addActivityToWorkout(req.params.workoutId, req.params.activityId);
     res.json(activity);
 });
 

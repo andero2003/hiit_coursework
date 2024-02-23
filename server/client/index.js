@@ -20,7 +20,7 @@ function addActivityElement(activity) {
     activityElement.setAttribute('description', activity.description);
     activityElement.setAttribute('duration', activity.duration);
     activityElement.setAttribute('activityId', activity.id);
-    
+
     return activityElement;
 }
 
@@ -108,7 +108,6 @@ function setupNavigation() {
     const toggleSidebar = document.querySelector('#toggleSidebar');
     toggleSidebar.addEventListener('click', () => {
         sidebarStatus = !sidebarStatus;
-        console.log(sidebarStatus);
         const sections = document.querySelectorAll('section');
         const sidebar = document.querySelector('#sidebar');
         sidebar.style.width = sidebarStatus ? '250px' : '0px';

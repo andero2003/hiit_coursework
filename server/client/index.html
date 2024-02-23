@@ -17,7 +17,7 @@
             <header>
                 <h3 id="name"></h3>
                 <h4 id="duration"></h4>
-                <button id="deleteActivity" class="cancel-button">Remove</button>
+                <button id="deleteActivity" class="cancel-button">Delete</button>
             </header>
             <p id="description"></p>
         </div>
@@ -33,16 +33,7 @@
             </header>
             <p></p>
             <div id="activitiesList"></div>
-            <button id="addActivity">Add activity</button>
-            <form id="createActivityForm" autocomplete="off" hidden>
-                <input type="text" id="activityName" placeholder="Activity name">
-                <input type="text" id="activityDescription" placeholder="Activity description">
-                <div>
-                    <input type="range" id="activityDuration" value="30" min="5" max="90" step="1" name="duration">
-                    <label for="duration">Duration: <span id="durationValue">30</span> seconds</label>
-                </div>
-                <button id="submitActivity" class="confirm-button">Create</button>
-            </form>
+            <button id="addActivityToWorkout">Add activity</button>
         </div>
     </template>
     <script defer src="components/WorkoutElement.js"></script>
@@ -80,6 +71,21 @@
     <section id="activitiesPage" hidden>
         <h1>Activities</h1>
         <hr>
+        <div id="newActivityHeader">
+            <button id="addActivity">Add Activity</button>
+            <form id="createActivityForm" autocomplete="off" hidden>
+                <input type="text" id="activityName" placeholder="Activity name">
+                <input type="text" id="activityDescription" placeholder="Activity description">
+                <div>
+                    <input type="range" id="activityDuration" value="30" min="5" max="90" step="1" name="duration">
+                    <label for="duration">Duration: <span id="durationValue">30</span> seconds</label>
+                </div>
+                <button id="submitActivity" class="confirm-button">Create</button>
+            </form>
+        </div>
+        <div id="activities">
+
+        </div>
     </section>
 </body>
 

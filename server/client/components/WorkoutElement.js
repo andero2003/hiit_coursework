@@ -24,22 +24,6 @@ class WorkoutElement extends HTMLElement {
             activitiesList.append(activityItem);
         }
 
-        const addActivityButton = this.shadowRoot.querySelector('#addActivity');
-        const createActivityForm = this.shadowRoot.querySelector('#createActivityForm');
-        addActivityButton.addEventListener('click', () => {
-            createActivityForm.hidden = !createActivityForm.hidden;
-        });
-
-        const durationSlider = this.shadowRoot.querySelector('#activityDuration');
-        const durationOutput = this.shadowRoot.querySelector('#durationValue');
-        durationSlider.addEventListener('input', () => {
-            durationOutput.textContent = durationSlider.value;
-        });
-
-        const workoutId = this.getAttribute('id');
-        const submitActivity = this.shadowRoot.querySelector('#submitActivity');
-        submitActivity.addEventListener('click', this.addActivity.bind(this));
-
         const deleteButton = this.shadowRoot.querySelector('#deleteWorkout');
         deleteButton.addEventListener('click', async () => {
             const status = await fetch(
@@ -50,45 +34,11 @@ class WorkoutElement extends HTMLElement {
             );
             this.remove();
         });
-    }
 
-    async addActivity() {
-        const createActivityForm = this.shadowRoot.querySelector('#createActivityForm');
-        const name = createActivityForm.querySelector('#activityName').value;
-        if (!name) return;
-        const description = createActivityForm.querySelector('#activityDescription').value;
-        if (!description) return;
-        let duration = createActivityForm.querySelector('#activityDuration').value;
-        duration = parseInt(duration);
-        console.log(duration);
-        if (!duration) return;
+        const addActivityToWorkoutButton = this.shadowRoot.querySelector('#addActivityToWorkout');
+        addActivityToWorkoutButton.addEventListener('click', () => {
 
-        const workoutId = this.getAttribute('id');
-        const newActivity = await fetch(
-            `/workout/${workoutId}/activity`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, description, duration }),
-            },
-        );
-
-        console.log(newActivity);
-
-        const newActivityData = await newActivity.json();
-        console.log(newActivityData);
-
-        const activityItem = document.createElement('activity-element');
-        activityItem.setAttribute('name', newActivityData.name);
-        activityItem.setAttribute('description', newActivityData.description);
-        activityItem.setAttribute('duration', newActivityData.duration);
-        activityItem.setAttribute('workoutId', this.getAttribute('id'));
-        activityItem.setAttribute('activityId', newActivityData.id);
-
-        const activitiesList = this.shadowRoot.querySelector('#activitiesList');
-        activitiesList.append(activityItem);
+        });
     }
 
     get activities() {

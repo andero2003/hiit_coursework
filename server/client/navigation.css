@@ -60,14 +60,29 @@ section>hr {
 
 /* Form stuff TODO remove from this file */
 
-#createWorkoutForm {
-    padding-top: 10px;
-}
-
-#workouts {
+#workouts, #activities {
     margin-top: 12px;
     margin-bottom: 12px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+}
+
+form {
+    margin-top: 12px;
+}
+
+form>input {
+    display: block;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+form>div {
+    display: flex;
+    align-items: center;
+}
+
+form>div>label {
+    margin-left: 10px;
 }

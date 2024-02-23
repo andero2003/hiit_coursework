@@ -14,23 +14,3 @@ p {
     margin-left: 4px;
 }
 
-/* Form stuff */
-
-form {
-    margin-top: 12px;
-}
-
-form>input {
-    display: block;
-    margin-top: 8px;
-    margin-bottom: 8px;
-}
-
-form>div {
-    display: flex;
-    align-items: center;
-}
-
-form>div>label {
-    margin-left: 10px;
-}

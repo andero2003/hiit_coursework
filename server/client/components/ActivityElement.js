@@ -19,10 +19,9 @@ class ActivityElement extends HTMLElement {
 
         const deleteActivity = this.shadowRoot.querySelector('#deleteActivity');
         deleteActivity.addEventListener('click', async () => {
-            const workoutId = this.getAttribute('workoutId');
             const activityId = this.getAttribute('activityId');
             const status = await fetch(
-                `/workout/${workoutId}/activity/${activityId}`,
+                `/activity/${activityId}`,
                 {
                     method: 'DELETE',
                 },

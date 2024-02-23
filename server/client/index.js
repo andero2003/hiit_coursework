@@ -1,4 +1,5 @@
 const workoutsList = document.querySelector('#workouts');
+const activitiesList = document.querySelector('#activities');
 const addWorkoutButton = document.querySelector('#addWorkout');
 const workoutForm = document.querySelector('#createWorkoutForm');
 
@@ -11,6 +12,16 @@ function addWorkoutElement(workout, activities) {
     workoutElement.activities = activities;
 
     return workoutElement;
+}
+
+function addActivityElement(activity) {
+    const activityElement = document.createElement('activity-element');
+    activityElement.setAttribute('name', activity.name);
+    activityElement.setAttribute('description', activity.description);
+    activityElement.setAttribute('duration', activity.duration);
+    activityElement.setAttribute('activityId', activity.id);
+    
+    return activityElement;
 }
 
 async function fetchWorkouts() {
@@ -29,6 +40,19 @@ async function fetchWorkouts() {
     }
 }
 
+async function fetchActivities() {
+    const activities = await fetch(
+        `/activity`,
+    );
+    const data = await activities.json();
+
+    for (const activity of data) {
+        const activityElement = addActivityElement(activity);
+        activitiesList.append(activityElement);
+    }
+}
+
+fetchActivities();
 fetchWorkouts();
 
 addWorkoutButton.addEventListener('click', () => {
@@ -36,7 +60,8 @@ addWorkoutButton.addEventListener('click', () => {
 });
 
 const submitWorkout = document.querySelector('#submitWorkout');
-submitWorkout.addEventListener('click', async () => {
+submitWorkout.addEventListener('click', async (e) => {
+    e.preventDefault();
     const name = workoutForm.querySelector('#workoutName').value;
     if (!name) return;
     const description = workoutForm.querySelector('#workoutDescription').value;
@@ -60,6 +85,7 @@ submitWorkout.addEventListener('click', async () => {
     const activitiesData = await activities.json();
     const workoutDiv = addWorkoutElement(workoutData, activitiesData.activities);
     workoutsList.append(workoutDiv);
+    workoutForm.hidden = true;
 });
 
 function setupNavigation() {
@@ -95,3 +121,44 @@ function setupNavigation() {
 }
 
 setupNavigation();
+
+
+const addActivityButton = document.querySelector('#addActivity');
+const createActivityForm = document.querySelector('#createActivityForm');
+addActivityButton.addEventListener('click', () => {
+    createActivityForm.hidden = !createActivityForm.hidden;
+});
+
+const durationSlider = document.querySelector('#activityDuration');
+const durationOutput = document.querySelector('#durationValue');
+durationSlider.addEventListener('input', () => {
+    durationOutput.textContent = durationSlider.value;
+});
+
+const submitActivity = document.querySelector('#submitActivity');
+submitActivity.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const name = createActivityForm.querySelector('#activityName').value;
+    if (!name) return;
+    const description = createActivityForm.querySelector('#activityDescription').value;
+    if (!description) return;
+    let duration = createActivityForm.querySelector('#activityDuration').value;
+    duration = parseInt(duration);
+    if (!duration) return;
+
+    const newActivity = await fetch(
+        `/activity`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, description, duration }),
+        },
+    );
+
+    const newActivityData = await newActivity.json();
+    const activityElement = addActivityElement(newActivityData);
+    activitiesList.append(activityElement);
+    createActivityForm.hidden = true;
+});

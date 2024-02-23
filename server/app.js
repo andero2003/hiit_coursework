@@ -8,6 +8,27 @@ const workoutRouter = express.Router();
 app.use('/workout', workoutRouter);
 app.use(express.static('client', { extensions: ['html'] }));
 
+const activityRouter = express.Router();
+app.use('/activity', activityRouter);
+
+// Get all activities
+activityRouter.get('/', async (req, res) => {
+    const activities = await database.getActivities();
+    res.json(activities);
+});
+
+// Create new activity
+activityRouter.post('/', express.json(), async (req, res) => {
+    const status = await database.createActivity(req.body.name, req.body.description, req.body.duration);
+    res.json(status);
+});
+
+// Delete activity
+activityRouter.delete('/:id', async (req, res) => {
+    const status = await database.deleteActivity(req.params.id);
+    res.json(status);
+});
+
 // Get all workouts
 workoutRouter.get('/', async (req, res) => {
     const workouts = await database.getWorkouts();

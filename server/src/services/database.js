@@ -84,6 +84,12 @@ export async function getWorkouts() {
     return rows;
 }
 
+export async function getActivities() {
+    const db = await dbConn;
+    const rows = await db.all(`SELECT * FROM activity;`);
+    return rows;
+}
+
 export async function getWorkoutData(id) {
     const db = await dbConn;
     const row = await db.get(`SELECT * FROM workout WHERE id = ?;`, id);

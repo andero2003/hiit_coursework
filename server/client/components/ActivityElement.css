@@ -20,9 +20,3 @@ p {
 #deleteActivity {
     margin: 10px;
 }
-
-.activity.card {
-    background-color: rgb(187, 187, 187);
-    margin-top: 8px;
-    margin-bottom: 8px;
-}

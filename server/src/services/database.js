@@ -21,6 +21,7 @@ async function init() {
         id TEXT PRIMARY KEY,
         name TEXT,
         description TEXT,
+        imageUrl TEXT DEFAULT 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif',
         duration INTEGER DEFAULT 30
     );`);
     await db.exec(`CREATE TABLE IF NOT EXISTS workout_activity (
@@ -119,16 +120,24 @@ export async function createWorkout(name, description = 'No description') {
 
 export async function createActivity(name, description, duration) {
     console.log(name, description, duration);
+    const imageUrl = 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif';
     const db = await dbConn;
     const id = uuid();
-    await db.run(`INSERT INTO activity (id, name, description, duration) VALUES (?, ?, ?, ?);`, [id, name, description, duration]);
+    await db.run(`INSERT INTO activity (id, name, description, duration, imageUrl) VALUES (?, ?, ?, ?, ?);`, [id, name, description, duration, imageUrl]);
 
     return {
         id,
         name,
         description,
         duration,
+        imageUrl
     };
+}
+
+export async function updateActivity(id, { imageUrl }) {
+    const db = await dbConn;
+    await db.run(`UPDATE activity SET imageUrl = ? WHERE id = ?;`, [imageUrl, id]);
+    return 'Success';
 }
 
 export async function addActivityToWorkout(workoutId, activityId) {
@@ -143,7 +152,7 @@ export async function removeActivityFromWorkout(workoutId, activityId) {
     const { order } = await db.get(`SELECT "order" FROM workout_activity WHERE workout_id = ? AND activity_id = ?;`, [workoutId, activityId]);
 
     await db.run(`DELETE FROM workout_activity WHERE workout_id = ? AND activity_id = ?;`, [workoutId, activityId]);
-   
+
     await db.run(`UPDATE workout_activity SET "order" = "order" - 1 WHERE workout_id = ? AND "order" > ?;`, [workoutId, order]);
 
     return 'Success';

@@ -23,6 +23,12 @@ activityRouter.post('/', express.json(), async (req, res) => {
     res.json(status);
 });
 
+// Update activity
+activityRouter.patch('/:id', express.json(), async (req, res) => {
+    const status = await database.updateActivity(req.params.id, req.body);
+    res.json(status);
+});
+
 // Delete activity
 activityRouter.delete('/:id', async (req, res) => {
     const status = await database.deleteActivity(req.params.id);

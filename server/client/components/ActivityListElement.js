@@ -10,6 +10,9 @@ class ActivityListElement extends HTMLElement {
     connectedCallback() {
         const name = this.shadowRoot.querySelector('h3');
         name.textContent = this.getAttribute('name');
+
+        const activityImage = this.shadowRoot.querySelector('#activityImage');
+        activityImage.src = this.getAttribute('imageUrl');
     }
 }
 

@@ -11,8 +11,10 @@ class ActivityElement extends HTMLElement {
         this.shadowRoot.querySelector('#name').textContent = this.getAttribute('name');
         this.shadowRoot.querySelector('#description').textContent = this.getAttribute('description');
         this.shadowRoot.querySelector('#duration').textContent = this.formatDuration();
+        this.shadowRoot.querySelector('#activityImage img').src = this.getAttribute('imageUrl');
 
         this.setupDeleteButton();
+        this.setupEditImageButton();
     }
 
     formatDuration() {
@@ -20,6 +22,48 @@ class ActivityElement extends HTMLElement {
         const minutes = String(durationAsDate.getMinutes()).padStart(2, '0');
         const seconds = String(durationAsDate.getSeconds()).padStart(2, '0');
         return `${minutes}:${seconds}`;
+    }
+
+    setupEditImageButton() {
+        const activityImageDiv = this.shadowRoot.querySelector('#activityImage');
+        const urlInput = activityImageDiv.querySelector('input');
+        const confirmEditButton = activityImageDiv.querySelector('#confirmEdit');
+
+        const editImageButton = this.shadowRoot.querySelector('#editImage');
+        editImageButton.addEventListener('click', () => {
+            confirmEditButton.hidden = !confirmEditButton.hidden;
+            urlInput.hidden = !urlInput.hidden;
+        });
+
+        confirmEditButton.addEventListener('click', async () => {
+            const activityId = this.getAttribute('activityId');
+            const newUrl = urlInput.value;
+            if (!newUrl || newUrl.length == 0) return;
+
+            try {
+                const status = await fetch(
+                    `/activity/${activityId}`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            imageUrl: newUrl,
+                        }),
+                    },
+                );
+
+                if (status.ok) {
+                    const image = this.shadowRoot.querySelector('#activityImage img');
+                    image.src = newUrl;
+                    confirmEditButton.hidden = true;
+                    urlInput.hidden = true;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
     }
 
     setupDeleteButton() {

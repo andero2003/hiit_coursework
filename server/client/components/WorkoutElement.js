@@ -45,6 +45,7 @@ class WorkoutElement extends HTMLElement {
         const activityItem = document.createElement('activity-list-element');
         activityItem.setAttribute('activityId', activity.id);
         activityItem.setAttribute('name', activity.name);
+        activityItem.setAttribute('imageUrl', activity.imageUrl);
 
         activitiesList.append(activityItem);
 

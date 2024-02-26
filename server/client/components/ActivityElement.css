@@ -20,3 +20,18 @@ p {
 #deleteActivity {
     margin: 10px;
 }
+
+#activityImage>* {
+    display: block;
+}
+
+#activityImage>div {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+}
+
+#activityImage>div>input {
+    margin: 8px;
+    width: 50%;
+}

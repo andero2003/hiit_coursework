@@ -14,6 +14,9 @@
         <link rel="stylesheet" href="components/ActivityListElement.css" />
         <link rel="stylesheet" href="global.css" />
         <div class="card">
+            <img id="activityImage"
+                src="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a258b2108677535.5fc364926e4a7.gif"
+                height="128px" alt="Activity" />
             <h3>Title</h3>
             <button id="removeActivityFromWorkout" class="cancel-button">
                 <img width="24px" src="./assets/Trash 64.png" alt="Delete" />
@@ -33,6 +36,19 @@
                 </button>
             </header>
             <p id="description"></p>
+            <div id="activityImage">
+                <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a258b2108677535.5fc364926e4a7.gif"
+                    width="100%" alt="Activity" />
+                <div>
+                    <button id="editImage">
+                        <img width="24px" src="./assets/Pencil 64.png" alt="Edit image" />
+                    </button>
+                    <input type="text" placeholder="Enter image URL..." hidden />
+                    <button id="confirmEdit" class="confirm-button" hidden>
+                        OK
+                    </button>
+                </div>
+            </div>
         </div>
     </template>
     <script src="components/ActivityElement.js"></script>

@@ -19,6 +19,7 @@ function addActivityElement(activity) {
     activityElement.setAttribute('name', activity.name);
     activityElement.setAttribute('description', activity.description);
     activityElement.setAttribute('duration', activity.duration);
+    activityElement.setAttribute('imageUrl', activity.imageUrl);
     activityElement.setAttribute('activityId', activity.id);
 
     return activityElement;
@@ -157,6 +158,7 @@ submitActivity.addEventListener('click', async (e) => {
     );
 
     const newActivityData = await newActivity.json();
+    console.log(newActivityData);
     const activityElement = addActivityElement(newActivityData);
     activitiesList.append(activityElement);
     createActivityForm.hidden = true;

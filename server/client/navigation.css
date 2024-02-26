@@ -60,12 +60,20 @@ section>hr {
 
 /* Form stuff TODO remove from this file */
 
-#workouts, #activities {
+#workouts,
+#activities {
     margin-top: 12px;
     margin-bottom: 12px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+}
+
+#workouts {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+#activities {
+    grid-template-columns: repeat(6, 1fr);
 }
 
 form {

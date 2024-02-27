@@ -7,3 +7,15 @@ div {
 div>button {
     padding: 8px;
 }
+
+.card>div {
+    display: block;
+}
+
+#timer {
+    justify-content: left;
+}
+
+p {
+    margin: 8px;
+}

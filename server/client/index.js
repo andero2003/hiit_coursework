@@ -37,13 +37,18 @@ async function fetchWorkouts() {
         const activityIds = activitiesList.map((compositeId) => compositeId.split(' ')[0]);
         const identifierIds = activitiesList.map((compositeId) => compositeId.split(' ')[1]);
 
-        // fetch activities from their IDs
-        const activities = await fetch(
-            '/activity?ids=' + activityIds.join(',')
-        );
-        const activitiesData = await activities.json();
-        for (let i = 0; i < activitiesData.length; i++) {
-            activitiesData[i].identifier = identifierIds[i];
+        console.log('Activity IDs')
+        console.log(activityIds);
+
+        let activitiesData = [];
+        if (activityIds.length > 0) {
+            const activities = await fetch(
+                activityIds.length > 0 ? '/activity?ids=' + activityIds.join(',') : '/activity',
+            );
+            activitiesData = await activities.json();
+            for (let i = 0; i < activitiesData.length; i++) {
+                activitiesData[i].identifier = identifierIds[i];
+            }
         }
 
         let workoutDiv = addWorkoutElement(workout, activitiesData);
@@ -96,16 +101,7 @@ submitWorkout.addEventListener('click', async (e) => {
     const activityIds = activitiesList.map((compositeId) => compositeId.split(' ')[0]);
     const identifierIds = activitiesList.map((compositeId) => compositeId.split(' ')[1]);
 
-    // fetch activities from their IDs
-    const activities = await fetch(
-        '/activity?ids=' + activityIds.join(',')
-    );
-    const activitiesData = await activities.json();
-    for (let i = 0; i < activitiesData.length; i++) {
-        activitiesData[i].identifier = identifierIds[i];
-    }
-
-    let workoutDiv = addWorkoutElement(workout, activitiesData);
+    let workoutDiv = addWorkoutElement(workout, []);
     workoutsList.append(workoutDiv);
     workoutForm.hidden = true;
 });

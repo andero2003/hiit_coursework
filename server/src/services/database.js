@@ -127,8 +127,9 @@ export async function deleteActivity(activityId) {
     for (const workout of workouts) {
         const workoutId = workout.id;
         const activities = JSON.parse(workout.activities);
-        if (!activities.includes(activityId)) continue;
-        const newActivities = activities.filter((activityId) => activityId !== workoutId);
+        const newActivities = activities.filter((compositeId) => {
+            return compositeId.split(' ')[0] !== activityId;
+        });
         await db.run(`UPDATE workout SET activities = ? WHERE id = ?;`, [JSON.stringify(newActivities), workoutId]);
     }
 

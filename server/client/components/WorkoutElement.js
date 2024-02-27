@@ -46,6 +46,7 @@ class WorkoutElement extends HTMLElement {
         activityItem.setAttribute('activityId', activity.id);
         activityItem.setAttribute('name', `${activity.name}`);
         activityItem.setAttribute('imageUrl', activity.imageUrl);
+        activityItem.setAttribute('duration', activity.duration);
         activityItem.setAttribute('identifier', activity.identifier);
 
         activitiesList.append(activityItem);

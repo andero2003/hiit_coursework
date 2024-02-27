@@ -8,7 +8,6 @@ function addWorkoutElement(workout, activities) {
     workoutElement.setAttribute('name', workout.name);
     workoutElement.setAttribute('id', workout.id);
     workoutElement.setAttribute('description', workout.description);
-
     workoutElement.activities = activities;
 
     return workoutElement;
@@ -30,13 +29,27 @@ async function fetchWorkouts() {
         '/workout/',
     );
     const data = await workouts.json();
+    console.log('Workouts')
+    console.log(data);
 
     for (const workout of data) {
+        const activitiesList = JSON.parse(workout.activities);
+        const activityIds = activitiesList.map((compositeId) => compositeId.split(' ')[0]);
+        const identifierIds = activitiesList.map((compositeId) => compositeId.split(' ')[1]);
+
+        console.log(activityIds);
+        console.log(identifierIds);
+
+        // fetch activities from their IDs
         const activities = await fetch(
-            `/workout/${workout.id}`,
+            '/activity?ids=' + activityIds.join(',')
         );
         const activitiesData = await activities.json();
-        let workoutDiv = addWorkoutElement(workout, activitiesData.activities);
+        for (let i = 0; i < activitiesData.length; i++) {
+            activitiesData[i].identifier = identifierIds[i];
+        }
+
+        let workoutDiv = addWorkoutElement(workout, activitiesData);
         workoutsList.append(workoutDiv);
     }
 }
@@ -46,6 +59,8 @@ async function fetchActivities() {
         `/activity`,
     );
     const data = await activities.json();
+    console.log('Activities')
+    console.log(data);
 
     for (const activity of data) {
         const activityElement = addActivityElement(activity);
@@ -88,61 +103,6 @@ submitWorkout.addEventListener('click', async (e) => {
     workoutsList.append(workoutDiv);
     workoutForm.hidden = true;
 });
-
-function setupNavigation() {
-    const workoutsPage = document.querySelector('#workoutsPage');
-    const activitiesPage = document.querySelector('#activitiesPage');
-    const toggleSidebar = document.querySelector('#toggleSidebar');
-
-    let sidebarStatus = false;
-    function updateSidebarVisibility() {
-        const sidebar = document.querySelector('#sidebar');
-        sidebar.style.width = sidebarStatus ? '60%' : '0px';
-        sidebar.style.padding = sidebarStatus ? '12px 12px' : '12px 0px';
-        toggleSidebar.style.left = sidebarStatus ? '67%' : '10px';
-    }
-
-    const showWorkouts = document.querySelector('#showWorkouts');
-    showWorkouts.addEventListener('click', () => {
-        workoutsPage.hidden = false;
-        activitiesPage.hidden = true;
-        sidebarStatus = false;
-        updateSidebarVisibility();
-    });
-
-    const showActivities = document.querySelector('#showActivities');
-    showActivities.addEventListener('click', () => {
-        workoutsPage.hidden = true;
-        activitiesPage.hidden = false;
-        sidebarStatus = false;
-        updateSidebarVisibility();
-    });
-
-    toggleSidebar.addEventListener('click', () => {
-        sidebarStatus = !sidebarStatus;
-        updateSidebarVisibility();
-    });
-
-    let touchStart = 0;
-    let touchEnd = 0;
-    document.addEventListener('touchstart', (e) => {
-        touchStart = e.touches[0].clientX;
-    });
-
-    document.addEventListener('touchend', (e) => {
-        touchEnd = e.changedTouches[0].clientX;
-        if (touchStart - touchEnd > 50) {
-            sidebarStatus = false;
-            updateSidebarVisibility();
-        } else if (touchEnd - touchStart > 50) {
-            sidebarStatus = true;
-            updateSidebarVisibility();
-        }
-    });
-}
-
-setupNavigation();
-
 
 const addActivityButton = document.querySelector('#addActivity');
 const createActivityForm = document.querySelector('#createActivityForm');

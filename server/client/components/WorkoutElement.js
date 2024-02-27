@@ -13,9 +13,9 @@ class WorkoutElement extends HTMLElement {
         this.shadowRoot.querySelector('h2').textContent = this.getAttribute('name');
         this.shadowRoot.querySelector('p').textContent = this.getAttribute('description') || 'No description';
 
-        const activitiesList = this.shadowRoot.querySelector('#activitiesList');
         for (const activity of this.activities) {
-            this.addActivity(activity);
+            this.addActivityToList(activity);
+            console.log(activity)
         }
 
         const deleteButton = this.shadowRoot.querySelector('#deleteWorkout');
@@ -40,24 +40,25 @@ class WorkoutElement extends HTMLElement {
         });
     }
 
-    addActivity(activity) {
+    addActivityToList(activity) {
         const activitiesList = this.shadowRoot.querySelector('#activitiesList');
         const activityItem = document.createElement('activity-list-element');
         activityItem.setAttribute('activityId', activity.id);
         activityItem.setAttribute('name', `${activity.name}`);
         activityItem.setAttribute('imageUrl', activity.imageUrl);
+        activityItem.setAttribute('identifier', activity.identifier);
 
         activitiesList.append(activityItem);
 
         const deleteButton = activityItem.shadowRoot.querySelector('#removeActivityFromWorkout');
         deleteButton.addEventListener('click', async () => {
             const status = await fetch(
-                `/workout/${this.getAttribute('id')}/activity/${activity.id}`,
+                `/workout/${this.getAttribute('id')}/activity/${activity.identifier}`,
                 {
                     method: 'DELETE',
                 },
+
             );
-            const order = await status.json();
             this.activities = this.activities.filter((a) => a.id !== activity.id);
             activityItem.remove();
         });
@@ -76,10 +77,7 @@ class WorkoutElement extends HTMLElement {
         console.log(allActivities)
         const addActivityList = this.shadowRoot.querySelector('#addActivityList');
         addActivityList.replaceChildren();
-        //let atLeastOneActivity = false;
         for (const activity of allActivities) {
-            //if (this._activities.find((a) => a.id === activity.id)) { continue; };
-            //atLeastOneActivity = true;
             const activityItem = document.createElement('button')
             activityItem.textContent = activity.name;
             addActivityList.append(activityItem);
@@ -99,17 +97,12 @@ class WorkoutElement extends HTMLElement {
                     activity.order = data;
 
                     this.activities = [...this.activities, activity];
-                    this.addActivity(activity);
+                    this.addActivityToList(activity);
                 } catch (e) {
                     console.log(e);
                 }
             });
         }
-        // if (!atLeastOneActivity) {
-        //     const noActivities = document.createElement('p');
-        //     noActivities.textContent = 'No activities available to add';
-        //     addActivityList.append(noActivities);
-        // }
     }
 
     get activities() {

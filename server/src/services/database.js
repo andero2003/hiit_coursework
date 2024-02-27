@@ -14,8 +14,9 @@ async function init() {
 
     await db.exec(`CREATE TABLE IF NOT EXISTS workout (
         id TEXT PRIMARY KEY,
-        name TEXT DEFAULT 'New Workout',
-        description 
+        name TEXT DEFAULT 'New workout',
+        description TEXT DEFAULT 'No description',
+        activities JSON DEFAULT '[]'
     );`);
     await db.exec(`CREATE TABLE IF NOT EXISTS activity (
         id TEXT PRIMARY KEY,
@@ -24,61 +25,11 @@ async function init() {
         imageUrl TEXT DEFAULT 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif',
         duration INTEGER DEFAULT 30
     );`);
-    await db.exec(`CREATE TABLE IF NOT EXISTS workout_activity (
-        workout_id TEXT,
-        activity_id TEXT,
-        "order" INTEGER,
-        PRIMARY KEY (workout_id, activity_id, "order")
-    );`);
 
     return db;
 }
 
 const dbConn = init();
-
-// // Run the SQL commands to create the tables
-// db.serialize(() => {
-//     db.run(`CREATE TABLE IF NOT EXISTS workout (
-//         id TEXT PRIMARY KEY,
-//         name TEXT DEFAULT 'New Workout',
-//         description 
-//     );`);
-//     db.run(`CREATE TABLE IF NOT EXISTS activity (
-//         id TEXT PRIMARY KEY,
-//         name TEXT,
-//         description TEXT,
-//         duration INTEGER DEFAULT 30
-//     );`);
-//     db.run(`CREATE TABLE IF NOT EXISTS workout_activity (
-//         id TEXT PRIMARY KEY,
-//         id TEXT PRIMARY KEY,
-//         PRIMARY KEY (workout_id, activity_id)
-//     );`);
-
-//     // Dummy data
-//     // db.run(`INSERT INTO workout (name) VALUES ('Morning Boost');`);
-//     // db.run(`INSERT INTO workout (name) VALUES ('Midday Energizer');`);
-//     // db.run(`INSERT INTO workout (name) VALUES ('Evening Wind Down');`);
-
-//     // // Inserting dummy activities
-//     // db.run(`INSERT INTO activity (name, description, duration) VALUES ('Jumping Jacks', 'A full body workout that increases aerobic fitness, strength, and flexibility', 60);`);
-//     // db.run(`INSERT INTO activity (name, description, duration) VALUES ('Squats', 'Lower body workout targeting your glutes, hips, and thighs', 45);`);
-//     // db.run(`INSERT INTO activity (name, description, duration) VALUES ('Push-ups', 'Upper body exercise that targets the chest, shoulders, and triceps', 30);`);
-//     // db.run(`INSERT INTO activity (name, description, duration) VALUES ('Plank', 'Core exercise for improving posture and general strength', 90);`);
-
-//     // // You should wait until the activities and workouts are inserted
-//     // // This is just a simplified representation, you might need to use promises or callbacks to handle async execution
-
-//     // // Associating workouts with activities
-//     // // Assuming the workout IDs are 1, 2, 3 and activity IDs are 1, 2, 3, 4
-//     // db.run(`INSERT INTO workout_activity (workout_id, activity_id) VALUES (1, 1);`); // Morning Boost - Jumping Jacks
-//     // db.run(`INSERT INTO workout_activity (workout_id, activity_id) VALUES (1, 2);`); // Morning Boost - Squats
-//     // db.run(`INSERT INTO workout_activity (workout_id, activity_id) VALUES (2, 3);`); // Midday Energizer - Push-ups
-//     // db.run(`INSERT INTO workout_activity (workout_id, activity_id) VALUES (2, 4);`); // Midday Energizer - Plank
-//     // db.run(`INSERT INTO workout_activity (workout_id, activity_id) VALUES (3, 1);`); // Evening Wind Down - Jumping Jacks
-//     // db.run(`INSERT INTO workout_activity (workout_id, activity_id) VALUES (3, 3);`); // Evening Wind Down - Push-ups
-// });
-
 export async function getWorkouts() {
     const db = await dbConn;
     const rows = await db.all(`SELECT * FROM workout;`);
@@ -91,22 +42,29 @@ export async function getActivities() {
     return rows;
 }
 
+export async function getActivitiesData(ids) {
+    const db = await dbConn;
+    const rows = await db.all(`SELECT * FROM activity WHERE id IN (${ids.map(() => '?').join(',')});`, ids);
+    const result = [];
+    for (const id of ids) {
+        result.push(rows.find((row) => row.id === id));
+    }
+
+    return result;
+}
+
 export async function getWorkoutData(id) {
     const db = await dbConn;
     const row = await db.get(`SELECT * FROM workout WHERE id = ?;`, id);
     return row;
 }
 
-export async function getActivitiesForWorkout(id) {
+export async function getActivitiesForWorkout(workoutId) {
     const db = await dbConn;
-    const rows = await db.all(`
-    SELECT activity.*, workout_activity."order" FROM activity
-    JOIN workout_activity ON workout_activity.activity_id = activity.id
-    WHERE workout_id = ?
-    ORDER BY workout_activity."order";
-    `, id);
-    console.log(rows);
-    return rows;
+    const workout = await db.get(`SELECT activities FROM workout WHERE id = ?;`, workoutId);
+    const activityIDs = JSON.parse(workout.activities);
+    const activities = await db.all(`SELECT * FROM activity WHERE id IN (${activityIDs.map(() => '?').join(',')});`, activityIDs);
+    return activities;
 }
 
 export async function createWorkout(name, description = 'No description') {
@@ -143,38 +101,41 @@ export async function updateActivity(id, { imageUrl }) {
 
 export async function addActivityToWorkout(workoutId, activityId) {
     const db = await dbConn;
-    const order = await db.get(`SELECT MAX("order") as max FROM workout_activity WHERE workout_id = ?;`, workoutId);
-    if (!order.max) { order.max = 0;}
-    const newOrder = order.max + 1;
-    console.log(`New order is ${newOrder}`);
-    await db.run(`INSERT INTO workout_activity (workout_id, activity_id, "order") VALUES (?, ?, ?);`, [workoutId, activityId, newOrder]);
-    return newOrder;
+    const compositeId = `${activityId} ${uuid()}`; // to distinguish between multiple instances of the same activity in a workout
+    await db.run(`UPDATE workout SET activities = json_insert(activities, '$[#]', ?) WHERE id = ?;`, [compositeId, workoutId]);
+    return await getActivitiesForWorkout(workoutId);
 }
 
-export async function removeActivityFromWorkout(workoutId, activityId) {
+export async function removeActivityFromWorkout(workoutId, workoutSpecificIdentifier) {
     const db = await dbConn;
-    const { order } = await db.get(`SELECT "order" FROM workout_activity WHERE workout_id = ? AND activity_id = ?;`, [workoutId, activityId]);
-
-    await db.run(`DELETE FROM workout_activity WHERE workout_id = ? AND activity_id = ?;`, [workoutId, activityId]);
-
-    return order;
+    const workout = await db.get(`SELECT activities FROM workout WHERE id = ?;`, workoutId);
+    const activityIDs = JSON.parse(workout.activities);
+    const newActivities = activityIDs.filter((id) => {
+        const [_, identifier] = id.split(' ');
+        return identifier !== workoutSpecificIdentifier;
+    });
+    const newActivitiesJSON = JSON.stringify(newActivities);
+    await db.run(`UPDATE workout SET activities = ? WHERE id = ?;`, [newActivitiesJSON, workoutId]);
+    return await getActivitiesForWorkout(workoutId);
 }
 
-export async function deleteActivity(id) {
+export async function deleteActivity(activityId) {
     const db = await dbConn;
-
-    const workouts = await db.all(`SELECT workout_id FROM workout_activity WHERE activity_id = ?;`, id);
+    const workouts = await getWorkouts();
     for (const workout of workouts) {
-        await removeActivityFromWorkout(workout.workout_id, id);
+        const workoutId = workout.id;
+        const activities = JSON.parse(workout.activities);
+        if (!activities.includes(activityId)) continue;
+        const newActivities = activities.filter((activityId) => activityId !== workoutId);
+        await db.run(`UPDATE workout SET activities = ? WHERE id = ?;`, [JSON.stringify(newActivities), workoutId]);
     }
 
-    await db.run(`DELETE FROM activity WHERE id = ?;`, id);
-    return 'Success';
+    await db.run(`DELETE FROM activity WHERE id = ?;`, activityId);
+    return await getActivities();
 }
 
 export async function deleteWorkout(id) {
     const db = await dbConn;
-    await db.run(`DELETE FROM workout_activity WHERE workout_id = ?;`, id);
     await db.run(`DELETE FROM workout WHERE id = ?;`, id);
-    return 'Success';
+    return await getWorkouts();
 }

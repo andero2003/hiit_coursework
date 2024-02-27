@@ -13,8 +13,13 @@ app.use('/activity', activityRouter);
 
 // Get all activities
 activityRouter.get('/', async (req, res) => {
-    const activities = await database.getActivities();
-    res.json(activities);
+    if (req.query.ids) {
+        const activities = await database.getActivitiesData(req.query.ids.split(','));
+        res.json(activities);
+    } else {
+        const activities = await database.getActivities();
+        res.json(activities);
+    }
 });
 
 // Create new activity
@@ -25,8 +30,7 @@ activityRouter.post('/', express.json(), async (req, res) => {
 
 // Update activity
 activityRouter.patch('/:id', express.json(), async (req, res) => {
-    const status = await database.updateActivity(req.params.id, req.body);
-    res.json(status);
+    res.json(await database.updateActivity(req.params.id, req.body));
 });
 
 // Delete activity
@@ -44,8 +48,7 @@ workoutRouter.get('/', async (req, res) => {
 // Get workout by ID
 workoutRouter.get('/:id', async (req, res) => {
     const workoutData = await database.getWorkoutData(req.params.id);
-    const activities = await database.getActivitiesForWorkout(req.params.id);
-    res.json({ ...workoutData, activities });
+    res.json(workoutData);
 });
 
 // Create new workout
@@ -56,14 +59,13 @@ workoutRouter.post('/', express.json(), async (req, res) => {
 
 // Add activity to workout
 workoutRouter.post('/:workoutId/activity/:activityId', express.json(), async (req, res) => {
-    const data = req.body;
     const newOrder = await database.addActivityToWorkout(req.params.workoutId, req.params.activityId);
     res.json(newOrder);
 });
 
 // Remove activity from workout
-workoutRouter.delete('/:id/activity/:activityId', async (req, res) => {
-    const status = await database.removeActivityFromWorkout(req.params.id, req.params.activityId);
+workoutRouter.delete('/:id/activity/:identifier', express.json(), async (req, res) => {
+    const status = await database.removeActivityFromWorkout(req.params.id, req.params.identifier);
     res.json(status);
 });
 

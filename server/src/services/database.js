@@ -70,11 +70,13 @@ export async function getActivitiesForWorkout(workoutId) {
 export async function createWorkout(name, description = 'No description') {
     const db = await dbConn;
     const id = uuid();
+    const activities = JSON.stringify([]);
     await db.run(`INSERT INTO workout (id, name, description) VALUES (?, ?, ?);`, [id, name, description]);
     return {
         id,
         name,
         description,
+        activities
     };
 }
 

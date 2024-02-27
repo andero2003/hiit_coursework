@@ -15,7 +15,6 @@ class WorkoutElement extends HTMLElement {
 
         for (const activity of this.activities) {
             this.addActivityToList(activity);
-            console.log(activity)
         }
 
         const deleteButton = this.shadowRoot.querySelector('#deleteWorkout');
@@ -75,7 +74,6 @@ class WorkoutElement extends HTMLElement {
     }
 
     updateAddActivitiesList(allActivities) {
-        console.log(allActivities)
         const addActivityList = this.shadowRoot.querySelector('#addActivityList');
         addActivityList.replaceChildren();
         for (const activity of allActivities) {

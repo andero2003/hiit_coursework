@@ -14,11 +14,9 @@ app.use('/activity', activityRouter);
 // Get all activities
 activityRouter.get('/', express.json(), async (req, res) => {
     if (req.query.ids) {
-        console.log('Getting activities by IDs');
         const activities = await database.getActivitiesData(req.query.ids.split(','));
         res.json(activities);
     } else {
-        console.log('Getting all activities');
         const activities = await database.getActivities();
         res.json(activities);
     }

@@ -29,16 +29,11 @@ async function fetchWorkouts() {
         '/workout/',
     );
     const data = await workouts.json();
-    console.log('Workouts')
-    console.log(data);
 
     for (const workout of data) {
         const activitiesList = JSON.parse(workout.activities);
         const activityIds = activitiesList.map((compositeId) => compositeId.split(' ')[0]);
         const identifierIds = activitiesList.map((compositeId) => compositeId.split(' ')[1]);
-
-        console.log('Activity IDs')
-        console.log(activityIds);
 
         let activitiesData = [];
         if (activityIds.length > 0) {
@@ -61,8 +56,6 @@ async function fetchActivities() {
         `/activity`,
     );
     const data = await activities.json();
-    console.log('Activities')
-    console.log(data);
 
     for (const activity of data) {
         const activityElement = addActivityElement(activity);
@@ -143,7 +136,6 @@ submitActivity.addEventListener('click', async (e) => {
     );
 
     const newActivityData = await newActivity.json();
-    console.log(newActivityData);
     const activityElement = addActivityElement(newActivityData);
     activitiesList.append(activityElement);
     createActivityForm.hidden = true;

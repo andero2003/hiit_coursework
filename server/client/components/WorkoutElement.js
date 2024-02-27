@@ -44,7 +44,7 @@ class WorkoutElement extends HTMLElement {
         const activitiesList = this.shadowRoot.querySelector('#activitiesList');
         const activityItem = document.createElement('activity-list-element');
         activityItem.setAttribute('activityId', activity.id);
-        activityItem.setAttribute('name', activity.name);
+        activityItem.setAttribute('name', `${activity.name}`);
         activityItem.setAttribute('imageUrl', activity.imageUrl);
 
         activitiesList.append(activityItem);
@@ -57,6 +57,7 @@ class WorkoutElement extends HTMLElement {
                     method: 'DELETE',
                 },
             );
+            const order = await status.json();
             this.activities = this.activities.filter((a) => a.id !== activity.id);
             activityItem.remove();
         });
@@ -75,10 +76,10 @@ class WorkoutElement extends HTMLElement {
         console.log(allActivities)
         const addActivityList = this.shadowRoot.querySelector('#addActivityList');
         addActivityList.replaceChildren();
-        let atLeastOneActivity = false;
+        //let atLeastOneActivity = false;
         for (const activity of allActivities) {
-            if (this._activities.find((a) => a.id === activity.id)) { continue; };
-            atLeastOneActivity = true;
+            //if (this._activities.find((a) => a.id === activity.id)) { continue; };
+            //atLeastOneActivity = true;
             const activityItem = document.createElement('button')
             activityItem.textContent = activity.name;
             addActivityList.append(activityItem);
@@ -94,6 +95,9 @@ class WorkoutElement extends HTMLElement {
                             method: 'POST',
                         },
                     );
+                    const data = await status.json();
+                    activity.order = data;
+
                     this.activities = [...this.activities, activity];
                     this.addActivity(activity);
                 } catch (e) {
@@ -101,11 +105,11 @@ class WorkoutElement extends HTMLElement {
                 }
             });
         }
-        if (!atLeastOneActivity) {
-            const noActivities = document.createElement('p');
-            noActivities.textContent = 'No activities available to add';
-            addActivityList.append(noActivities);
-        }
+        // if (!atLeastOneActivity) {
+        //     const noActivities = document.createElement('p');
+        //     noActivities.textContent = 'No activities available to add';
+        //     addActivityList.append(noActivities);
+        // }
     }
 
     get activities() {

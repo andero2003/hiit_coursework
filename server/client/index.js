@@ -92,31 +92,52 @@ submitWorkout.addEventListener('click', async (e) => {
 function setupNavigation() {
     const workoutsPage = document.querySelector('#workoutsPage');
     const activitiesPage = document.querySelector('#activitiesPage');
+    const toggleSidebar = document.querySelector('#toggleSidebar');
+
+    let sidebarStatus = false;
+    function updateSidebarVisibility() {
+        const sidebar = document.querySelector('#sidebar');
+        sidebar.style.width = sidebarStatus ? '60%' : '0px';
+        sidebar.style.padding = sidebarStatus ? '12px 12px' : '12px 0px';
+        toggleSidebar.style.left = sidebarStatus ? '67%' : '10px';
+    }
 
     const showWorkouts = document.querySelector('#showWorkouts');
     showWorkouts.addEventListener('click', () => {
         workoutsPage.hidden = false;
         activitiesPage.hidden = true;
+        sidebarStatus = false;
+        updateSidebarVisibility();
     });
 
     const showActivities = document.querySelector('#showActivities');
     showActivities.addEventListener('click', () => {
         workoutsPage.hidden = true;
         activitiesPage.hidden = false;
+        sidebarStatus = false;
+        updateSidebarVisibility();
     });
 
-    let sidebarStatus = true;
-    const toggleSidebar = document.querySelector('#toggleSidebar');
     toggleSidebar.addEventListener('click', () => {
         sidebarStatus = !sidebarStatus;
-        const sections = document.querySelectorAll('section');
-        const sidebar = document.querySelector('#sidebar');
-        sidebar.style.width = sidebarStatus ? '250px' : '0px';
-        sidebar.style.padding = sidebarStatus ? '12px 12px' : '12px 0px';
-        for (const section of sections) {
-            section.style.marginLeft = sidebarStatus ? '250px' : '0px';
+        updateSidebarVisibility();
+    });
+
+    let touchStart = 0;
+    let touchEnd = 0;
+    document.addEventListener('touchstart', (e) => {
+        touchStart = e.touches[0].clientX;
+    });
+
+    document.addEventListener('touchend', (e) => {
+        touchEnd = e.changedTouches[0].clientX;
+        if (touchStart - touchEnd > 50) {
+            sidebarStatus = false;
+            updateSidebarVisibility();
+        } else if (touchEnd - touchStart > 50) {
+            sidebarStatus = true;
+            updateSidebarVisibility();
         }
-        toggleSidebar.style.left = sidebarStatus ? '280px' : '10px';
     });
 }
 
@@ -145,6 +166,8 @@ submitActivity.addEventListener('click', async (e) => {
     let duration = createActivityForm.querySelector('#activityDuration').value;
     duration = parseInt(duration);
     if (!duration) return;
+    let imageUrl = createActivityForm.querySelector('#activityImageUrl').value;
+    if (!imageUrl) imageUrl = 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif';
 
     const newActivity = await fetch(
         `/activity`,
@@ -153,7 +176,7 @@ submitActivity.addEventListener('click', async (e) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name, description, duration }),
+            body: JSON.stringify({ name, description, duration, imageUrl }),
         },
     );
 

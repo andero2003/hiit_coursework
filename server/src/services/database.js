@@ -100,10 +100,12 @@ export async function getWorkoutData(id) {
 export async function getActivitiesForWorkout(id) {
     const db = await dbConn;
     const rows = await db.all(`
-    SELECT activity.* FROM activity
+    SELECT activity.*, workout_activity."order" FROM activity
     JOIN workout_activity ON workout_activity.activity_id = activity.id
-    WHERE workout_id = ?;
+    WHERE workout_id = ?
+    ORDER BY workout_activity."order";
     `, id);
+    console.log(rows);
     return rows;
 }
 
@@ -118,9 +120,8 @@ export async function createWorkout(name, description = 'No description') {
     };
 }
 
-export async function createActivity(name, description, duration) {
+export async function createActivity(name, description, duration, imageUrl) {
     console.log(name, description, duration);
-    const imageUrl = 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif';
     const db = await dbConn;
     const id = uuid();
     await db.run(`INSERT INTO activity (id, name, description, duration, imageUrl) VALUES (?, ?, ?, ?, ?);`, [id, name, description, duration, imageUrl]);
@@ -143,8 +144,11 @@ export async function updateActivity(id, { imageUrl }) {
 export async function addActivityToWorkout(workoutId, activityId) {
     const db = await dbConn;
     const order = await db.get(`SELECT MAX("order") as max FROM workout_activity WHERE workout_id = ?;`, workoutId);
-    await db.run(`INSERT INTO workout_activity (workout_id, activity_id, "order") VALUES (?, ?, ?);`, [workoutId, activityId, order + 1]);
-    return 'Success';
+    if (!order.max) { order.max = 0;}
+    const newOrder = order.max + 1;
+    console.log(`New order is ${newOrder}`);
+    await db.run(`INSERT INTO workout_activity (workout_id, activity_id, "order") VALUES (?, ?, ?);`, [workoutId, activityId, newOrder]);
+    return newOrder;
 }
 
 export async function removeActivityFromWorkout(workoutId, activityId) {
@@ -153,9 +157,7 @@ export async function removeActivityFromWorkout(workoutId, activityId) {
 
     await db.run(`DELETE FROM workout_activity WHERE workout_id = ? AND activity_id = ?;`, [workoutId, activityId]);
 
-    await db.run(`UPDATE workout_activity SET "order" = "order" - 1 WHERE workout_id = ? AND "order" > ?;`, [workoutId, order]);
-
-    return 'Success';
+    return order;
 }
 
 export async function deleteActivity(id) {

@@ -19,7 +19,7 @@ activityRouter.get('/', async (req, res) => {
 
 // Create new activity
 activityRouter.post('/', express.json(), async (req, res) => {
-    const status = await database.createActivity(req.body.name, req.body.description, req.body.duration);
+    const status = await database.createActivity(req.body.name, req.body.description, req.body.duration, req.body.imageUrl);
     res.json(status);
 });
 
@@ -57,8 +57,8 @@ workoutRouter.post('/', express.json(), async (req, res) => {
 // Add activity to workout
 workoutRouter.post('/:workoutId/activity/:activityId', express.json(), async (req, res) => {
     const data = req.body;
-    const activity = await database.addActivityToWorkout(req.params.workoutId, req.params.activityId);
-    res.json(activity);
+    const newOrder = await database.addActivityToWorkout(req.params.workoutId, req.params.activityId);
+    res.json(newOrder);
 });
 
 // Remove activity from workout

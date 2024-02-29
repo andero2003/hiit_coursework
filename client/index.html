@@ -65,11 +65,20 @@
         <div class="card">
             <header>
                 <h2></h2>
-                <button id="deleteWorkout" class="cancel-button">
-                    <img width="32px" src="./assets/Trash 64.png" alt="Delete" />
-                </button>
+                <div>
+                    <button id="pauseWorkout" hidden>
+                        <img width="32px" src="./assets/Pause.png" alt="Pause" />
+                    </button>
+                    <button id="startWorkout" class="confirm-button">
+                        <img width="32px" src="./assets/Play 64.png" alt="Start" />
+                    </button>
+                    <button id="deleteWorkout" class="cancel-button">
+                        <img width="32px" src="./assets/Trash 64.png" alt="Delete" />
+                    </button>
+                </div>
             </header>
             <p></p>
+            <h3 id="timer" hidden>Elapsed: 0:00</h3>
             <div id="activitiesList">
 
             </div>
@@ -79,7 +88,7 @@
             </div>
         </div>
     </template>
-    <script src="components/WorkoutElement.js"></script>
+    <script type="module" src="components/WorkoutElement.js"></script>
     <script defer src="index.js"></script>
     <script defer src="navigation/setupNavigation.js"></script>
 

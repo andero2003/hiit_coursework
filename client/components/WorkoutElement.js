@@ -1,3 +1,5 @@
+import { CleanupManager } from "../CleanupManager.js";
+
 class WorkoutElement extends HTMLElement {
     constructor() {
         super();
@@ -5,6 +7,11 @@ class WorkoutElement extends HTMLElement {
         const templateContent = template.content;
 
         this.displayAddList = false;
+
+        this.workoutInProgress = false;
+        this.workoutPaused = false;
+        this.workoutTime = 0;
+        this.workoutMaid = new CleanupManager();
 
         this.attachShadow({ mode: 'open' }).appendChild(templateContent.cloneNode(true));
     }
@@ -28,6 +35,21 @@ class WorkoutElement extends HTMLElement {
             this.remove();
         });
 
+        const startWorkoutButton = this.shadowRoot.querySelector('#startWorkout');
+        startWorkoutButton.addEventListener('click', () => {
+            this.workoutInProgress = !this.workoutInProgress;
+            if (this.workoutInProgress) {
+                this.startWorkout();
+            } else {
+                this.stopWorkout();
+            }
+        });
+
+        const pauseWorkoutButton = this.shadowRoot.querySelector('#pauseWorkout');
+        pauseWorkoutButton.addEventListener('click', () => {
+            this.pauseWorkout();
+        });
+
         const addActivityList = this.shadowRoot.querySelector('#addActivityList');
         const addActivityToWorkoutButton = this.shadowRoot.querySelector('#addActivityToWorkout');
         addActivityToWorkoutButton.addEventListener('click', async () => {
@@ -37,6 +59,48 @@ class WorkoutElement extends HTMLElement {
             const activitiesData = await activities.json();
             this.updateAddActivitiesList(activitiesData);
         });
+    }
+
+    startWorkout() {
+        const startWorkoutButton = this.shadowRoot.querySelector('#startWorkout');
+        startWorkoutButton.classList.add('in-progress');
+        startWorkoutButton.querySelector('img').src = './assets/Stop.png';
+        const timer = this.shadowRoot.querySelector('#timer');
+        timer.hidden = false;
+
+        const pauseWorkoutButton = this.shadowRoot.querySelector('#pauseWorkout');
+        pauseWorkoutButton.hidden = false;
+
+        this.workoutMaid.addTask(() => {
+            startWorkoutButton.classList.remove('in-progress');
+            startWorkoutButton.querySelector('img').src = './assets/Play 64.png';
+            timer.hidden = true;
+            pauseWorkoutButton.querySelector('img').src = './assets/Pause.png';
+            pauseWorkoutButton.hidden = true;
+            this.workoutTime = 0;
+            this.workoutPaused = false;
+        });
+
+        const interval = setInterval(() => {
+            if (this.workoutPaused) return;
+            this.workoutTime++;
+            const elapsedTime = this.workoutTime;
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = ((elapsedTime % 60)).toFixed(0);
+            timer.textContent = `Elapsed: ${minutes}:${(seconds < 10 ? '0' : '')}${seconds}`;
+        }, 1000);
+
+        this.workoutMaid.addTask(() => clearInterval(interval));
+    }
+
+    pauseWorkout() {
+        this.workoutPaused = !this.workoutPaused;
+        const pauseWorkoutButton = this.shadowRoot.querySelector('#pauseWorkout');
+        pauseWorkoutButton.querySelector('img').src = this.workoutPaused ? './assets/Play 64.png' : './assets/Pause.png';
+    }
+
+    stopWorkout() {
+        this.workoutMaid.clean();   
     }
 
     addActivityToList(activity) {

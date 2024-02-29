@@ -29,3 +29,11 @@ p {
     width: 100%;
     display: block;
 }
+
+#startWorkout.in-progress {
+    background-color: #ff2a00;
+}
+
+#pauseWorkout {
+    background-color: #ffcc00;
+}

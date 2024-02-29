@@ -90,10 +90,6 @@ submitWorkout.addEventListener('click', async (e) => {
 
     const workout = await newWorkout.json();
 
-    const activitiesList = JSON.parse(workout.activities);
-    const activityIds = activitiesList.map((compositeId) => compositeId.split(' ')[0]);
-    const identifierIds = activitiesList.map((compositeId) => compositeId.split(' ')[1]);
-
     let workoutDiv = addWorkoutElement(workout, []);
     workoutsList.append(workoutDiv);
     workoutForm.hidden = true;

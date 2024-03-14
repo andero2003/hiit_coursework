@@ -1,6 +1,4 @@
 function setupNavigation() {
-    const workoutsPage = document.querySelector('#workoutsPage');
-    const activitiesPage = document.querySelector('#activitiesPage');
     const toggleSidebar = document.querySelector('#toggleSidebar');
 
     let sidebarStatus = false;
@@ -10,22 +8,6 @@ function setupNavigation() {
         sidebar.style.padding = sidebarStatus ? '12px 12px' : '12px 0px';
         toggleSidebar.style.left = sidebarStatus ? '67%' : '10px';
     }
-
-    const showWorkouts = document.querySelector('#showWorkouts');
-    showWorkouts.addEventListener('click', () => {
-        workoutsPage.hidden = false;
-        activitiesPage.hidden = true;
-        sidebarStatus = false;
-        updateSidebarVisibility();
-    });
-
-    const showActivities = document.querySelector('#showActivities');
-    showActivities.addEventListener('click', () => {
-        workoutsPage.hidden = true;
-        activitiesPage.hidden = false;
-        sidebarStatus = false;
-        updateSidebarVisibility();
-    });
 
     toggleSidebar.addEventListener('click', () => {
         sidebarStatus = !sidebarStatus;

@@ -1,4 +1,4 @@
-import { CleanupManager } from "../CleanupManager.js";
+import { CleanupManager } from "../modules/CleanupManager.js";
 
 class WorkoutElement extends HTMLElement {
     constructor() {
@@ -100,7 +100,7 @@ class WorkoutElement extends HTMLElement {
     }
 
     stopWorkout() {
-        this.workoutMaid.clean();   
+        this.workoutMaid.clean();
     }
 
     addActivityToList(activity) {

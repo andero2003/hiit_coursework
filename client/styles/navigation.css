@@ -11,6 +11,11 @@
     transition: 0.25s;
 }
 
+#sidebar.open {
+    width: 60%;
+    padding: 12px 12px;
+}
+
 #sidebar button {
     text-decoration: none;
     width: 100%;
@@ -34,19 +39,6 @@
     color: #ffffff;
 }
 
-section {
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-section>h1 {
-    font-size: 32px;
-}
-
-section>hr {
-    border: 1px dashed #dadada;
-}
-
 #toggleSidebar {
     background-color: #08070f;
     position: fixed;
@@ -55,41 +47,4 @@ section>hr {
     left: 10px;
     transition: 0.25s;
     font-size: 24px;
-}
-
-/* Form stuff TODO remove from this file */
-
-#workouts,
-#activities {
-    margin-top: 12px;
-    margin-bottom: 60px;
-    display: grid;
-    gap: 20px;
-}
-
-#workouts {
-    grid-template-columns: repeat(1, 1fr);
-}
-
-#activities {
-    grid-template-columns: repeat(1, 1fr);
-}
-
-form {
-    margin-top: 12px;
-}
-
-form>input {
-    display: block;
-    margin-top: 8px;
-    margin-bottom: 8px;
-}
-
-form>div {
-    display: flex;
-    align-items: center;
-}
-
-form>div>label {
-    margin-left: 10px;
 }

@@ -5,15 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="navigation/navigation.css">
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="sections.css">
+    <link rel="stylesheet" href="./styles/navigation.css">
+    <link rel="stylesheet" href="./styles/global.css">
 </head>
 
 <body>
+    <template id="page-element-template">
+        <link rel="stylesheet" href="components/Page.css" />
+        <link rel="stylesheet" href="./styles/global.css">
+        <section>
+            <header>
+                <h1>Page Title</h1>
+            </header>
+            <slot name="content"></slot>
+        </section>
+    </template>
+    <script src="components/Page.js"></script>
     <template id="activity-list-element-template">
         <link rel="stylesheet" href="components/ActivityListElement.css" />
-        <link rel="stylesheet" href="global.css" />
+        <link rel="stylesheet" href="./styles/global.css">
         <div class="card">
             <img id="activityImage"
                 src="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a258b2108677535.5fc364926e4a7.gif"
@@ -33,7 +43,7 @@
     <script src="components/ActivityListElement.js"></script>
     <template id="activity-template">
         <link rel="stylesheet" href="components/ActivityElement.css" />
-        <link rel="stylesheet" href="global.css" />
+        <link rel="stylesheet" href="./styles/global.css">
         <div class="activity card">
             <header>
                 <h3 id="name"></h3>
@@ -58,10 +68,10 @@
             </div>
         </div>
     </template>
-    <script src="components/ActivityElement.js"></script>
+    <script type="module" src="components/ActivityElement.js"></script>
     <template id="workout-template">
         <link rel="stylesheet" href="components/WorkoutElement.css" />
-        <link rel="stylesheet" href="global.css" />
+        <link rel="stylesheet" href="./styles/global.css">
         <div class="card">
             <header>
                 <h2></h2>
@@ -90,7 +100,6 @@
     </template>
     <script type="module" src="components/WorkoutElement.js"></script>
     <script type="module" defer src="index.js"></script>
-    <script defer src="navigation/setupNavigation.js"></script>
 
     <nav id="sidebar">
 

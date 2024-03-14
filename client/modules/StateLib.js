@@ -37,9 +37,9 @@ class ValueObject {
      * Notifies all registered listeners about a change in value.
      * @private
      */
-    _notifyListeners() {
+    _notifyListeners(oldJSON) {
         this._callbacks.forEach((callback) => {
-            callback(this._value);
+            callback(this._value, oldJSON);
         });
     }
 
@@ -69,8 +69,16 @@ export class State extends ValueObject {
      * @param {*} value - The new value to set.
     */
     set value(value) {
-        this._value = value;
-        this._notifyListeners();
+        this._updateValue(value);
+    }
+
+    _updateValue(newValue) {
+        // Capture the old value before changing the state
+        const oldValueAsJSON = JSON.stringify(this._value);
+
+        // Check if the new value is different from the current value
+        this._value = newValue; // Update the value
+        this._notifyListeners(oldValueAsJSON); // Notify listeners with both old and new values
         this._dependants.forEach((dependant) => {
             dependant.update();
         });
@@ -132,10 +140,37 @@ export class CompoundState extends ValueObject {
     }
 }
 
-const workouts = new State([]);
-const activities = new State([]);
+/*
+    array = State([{id: 1, name: 'Jane'}, {id: 2, name: 'John'}])
+
+*/
+
+function valueCompare(value) {
+    if (typeof value === 'object') {
+        return JSON.stringify(value);
+    }
+    return value;
+}
+
+export function StateForEach(state, callback) {
+    const array = state.value;
+    for (let i = 0; i < array.length; i++) {
+        const element = array[i];
+        callback(element, i);
+    }
+    state.onChange((newValue, oldValueJSON) => {
+        // Compare element by element to see what changed
+        for (let i = 0; i < newValue.length; i++) {
+            if (oldValueJSON !== valueCompare(newValue[i])) {
+                callback(newValue[i], i);
+            }
+        }
+    });
+}
 
 export const StateManager = {
-    workouts: workouts,
-    activities: activities,
+    currentPage: new State('home'),
+    sidebarOpen: new State(false),
+    workouts: new State([]),
+    activities: new State([]),
 }

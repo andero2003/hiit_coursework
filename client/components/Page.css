@@ -1,0 +1,25 @@
+header {
+    position: relative;
+    width: auto;
+    height: 150px;
+    background-color: rgb(54, 54, 54);
+}
+
+header h1 {
+    position: absolute;
+    bottom: 0%;
+    padding: 8px;
+    margin: 0;
+    font-size: 40px;
+    color: white;
+}
+
+h3 {
+    padding: 10px;
+}
+
+div.grid-container {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr;
+}

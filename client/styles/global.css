@@ -2,6 +2,11 @@
     font-family: 'Trebuchet MS', sans-serif;
 }
 
+body {
+    margin: 0;
+    padding: 0;
+}
+
 button {
     background-color: #005cc5;
     color: white;

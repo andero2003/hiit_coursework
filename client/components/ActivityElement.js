@@ -1,3 +1,6 @@
+import { deleteActivity, updateImage } from "../modules/NetworkingService.js";
+import { StateManager } from "../modules/StateLib.js";
+
 class ActivityElement extends HTMLElement {
     constructor() {
         super();
@@ -39,27 +42,8 @@ class ActivityElement extends HTMLElement {
             const activityId = this.getAttribute('activityId');
             const newUrl = urlInput.value;
             if (!newUrl || newUrl.length == 0) return;
-
             try {
-                const status = await fetch(
-                    `/activity/${activityId}`,
-                    {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            imageUrl: newUrl,
-                        }),
-                    },
-                );
-
-                if (status.ok) {
-                    const image = this.shadowRoot.querySelector('#activityImage img');
-                    image.src = newUrl;
-                    confirmEditButton.hidden = true;
-                    urlInput.hidden = true;
-                }
+                await updateImage(activityId, newUrl);
             } catch (error) {
                 console.log(error);
             }
@@ -67,30 +51,11 @@ class ActivityElement extends HTMLElement {
     }
 
     setupDeleteButton() {
-        const deleteActivity = this.shadowRoot.querySelector('#deleteActivity');
-        deleteActivity.addEventListener('click', async () => {
+        const deleteActivityButton = this.shadowRoot.querySelector('#deleteActivity');
+        deleteActivityButton.addEventListener('click', async () => {
             const activityId = this.getAttribute('activityId');
-
             try {
-                const status = await fetch(
-                    `/activity/${activityId}`,
-                    {
-                        method: 'DELETE',
-                    },
-                );
-
-                this.remove();
-
-                // Reconcile workouts that use this activity
-                const workoutElements = document.querySelectorAll('workout-element');
-                for (const workoutElement of workoutElements) {
-                    const activities = workoutElement.activities;
-                    for (const activity of activities) {
-                        if (activity.id === activityId) {
-                            workoutElement.removeActivity(activityId);
-                        }
-                    }
-                }
+                await deleteActivity(activityId);
             } catch (error) {
                 console.log(error);
             }

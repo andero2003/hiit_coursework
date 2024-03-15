@@ -4,9 +4,9 @@ import { CompoundState, ReactiveContainer, StateManager } from "../modules/State
 const content = `
 <link rel="stylesheet" href="/styles/global.css">
 <link rel="stylesheet" href="/pages/activities.css">
-<div id="newActivityHeader">
+<div class="form-header">
 <button id="addActivity">Add Activity</button>
-<form id="createActivityForm" autocomplete="off" hidden>
+<form autocomplete="off" hidden>
     <input type="text" id="activityName" placeholder="Activity name">
     <input type="text" id="activityDescription" placeholder="Activity description">
     <div>
@@ -47,9 +47,15 @@ export function init(element) {
     });
 
     const addActivityButton = element.querySelector('#addActivity');
-    const createActivityForm = element.querySelector('#createActivityForm');
+    const createActivityForm = element.querySelector('form');
     addActivityButton.addEventListener('click', () => {
         createActivityForm.hidden = !createActivityForm.hidden;
+    });
+
+    const durationSlider = createActivityForm.querySelector('#activityDuration');
+    const durationOutput = createActivityForm.querySelector('#durationValue');
+    durationSlider.addEventListener('input', () => {
+        durationOutput.textContent = durationSlider.value;
     });
 
     const submitActivity = element.querySelector('#submitActivity');
@@ -59,16 +65,13 @@ export function init(element) {
         if (!name) return;
         const description = createActivityForm.querySelector('#activityDescription').value;
         if (!description) return;
-        let duration = createActivityForm.querySelector('#activityDuration').value;
+        let duration = durationSlider.value;
         duration = parseInt(duration);
         if (!duration) return;
         let imageUrl = createActivityForm.querySelector('#activityImageUrl').value;
         if (!imageUrl) imageUrl = 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif';
 
-        const newActivity = await createNewActivity(name, description, duration, imageUrl);
-
-        const newActivityData = await newActivity.json();
-        StateManager.activities.value = [...StateManager.activities.value, newActivityData];
+        const activity = await createNewActivity(name, description, duration, imageUrl);
         createActivityForm.hidden = true;
     });
 }

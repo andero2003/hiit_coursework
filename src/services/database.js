@@ -102,9 +102,10 @@ export async function updateActivity(id, { imageUrl }) {
 
 export async function addActivityToWorkout(workoutId, activityId) {
     const db = await dbConn;
-    const compositeId = `${activityId} ${uuid()}`; // to distinguish between multiple instances of the same activity in a workout
+    const identifier = uuid();
+    const compositeId = `${activityId} ${identifier}`; // to distinguish between multiple instances of the same activity in a workout
     await db.run(`UPDATE workout SET activities = json_insert(activities, '$[#]', ?) WHERE id = ?;`, [compositeId, workoutId]);
-    return await getActivitiesForWorkout(workoutId);
+    return identifier
 }
 
 export async function removeActivityFromWorkout(workoutId, workoutSpecificIdentifier) {

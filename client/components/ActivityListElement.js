@@ -1,3 +1,5 @@
+import { removeActivityFromWorkout } from "../modules/NetworkingService.js";
+
 class ActivityListElement extends HTMLElement {
     constructor() {
         super();
@@ -23,6 +25,11 @@ class ActivityListElement extends HTMLElement {
 
         const timer = this.shadowRoot.querySelector('#timer p');
         timer.textContent = this.formatDuration();
+
+        const deleteButton = this.shadowRoot.querySelector('#removeActivityFromWorkout');
+        deleteButton.addEventListener('click', async () => {
+            await removeActivityFromWorkout(this.getAttribute('workoutId'), this.getAttribute('identifier'));
+        });
     }
 }
 

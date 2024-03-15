@@ -60,7 +60,6 @@ class ActivityElement extends HTMLElement {
             const activityId = this.getAttribute('activityId');
             try {
                 await deleteActivity(activityId);
-                StateManager.activities.value = StateManager.activities.value.filter((activity) => activity.id !== activityId);
             } catch (error) {
                 console.log(error);
             }

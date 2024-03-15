@@ -40,7 +40,7 @@
             </button>
         </div>
     </template>
-    <script src="components/ActivityListElement.js"></script>
+    <script type="module" src="components/ActivityListElement.js"></script>
     <template id="activity-template">
         <link rel="stylesheet" href="components/ActivityElement.css" />
         <link rel="stylesheet" href="./styles/global.css">
@@ -87,6 +87,10 @@
                     </button>
                 </div>
             </header>
+            <div class="duration">
+                <img src="./assets/Clock 64.png" width="32px" alt="Duration" />
+                <h3>Duration</h3>
+            </div>
             <p></p>
             <h3 id="timer" hidden>Elapsed: 0:00</h3>
             <div id="activitiesList">

@@ -37,3 +37,13 @@ p {
 #pauseWorkout {
     background-color: #ffcc00;
 }
+
+.duration {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.duration>h3 {
+    margin-left: 10px;
+}

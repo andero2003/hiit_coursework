@@ -70,6 +70,13 @@ export async function deleteActivity(activityId) {
             method: 'DELETE',
         },
     );
+
+    // Reconcile state
+    StateManager.activities.value = StateManager.activities.value.filter((activity) => activity.id !== activityId);
+    StateManager.workouts.value = StateManager.workouts.value.map((workout) => {
+        workout.activities = workout.activities.filter(({ activity, identifier }) => activity.id !== activityId);
+        return workout;
+    });
     return status;
 }
 
@@ -84,6 +91,86 @@ export async function createNewActivity(name, description, duration, imageUrl) {
             body: JSON.stringify({ name, description, duration, imageUrl }),
         },
     );
-    return newActivity;
+    const data = await newActivity.json();
+    const activity = new Activity(data.id, data.name, data.description, data.duration, data.imageUrl);
+
+    // Reconcile state
+    StateManager.activities.value = [...StateManager.activities.value, activity];
+    return activity;
 }
 
+
+export async function createNewWorkout(name, description) {
+    const newWorkout = await fetch(
+        '/workout/',
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, description }),
+        },
+    );
+    const data = await newWorkout.json();
+    const workout = new Workout(data.id, data.name, data.description);
+
+    // Reconcile state
+    StateManager.workouts.value = [...StateManager.workouts.value, workout];
+    return workout;
+}
+
+export async function deleteWorkout(workoutId) {
+    const status = await fetch(
+        `/workout/${workoutId}`,
+        {
+            method: 'DELETE',
+        },
+    );
+
+    // Reconcile state
+    StateManager.workouts.value = StateManager.workouts.value.filter((workout) => workout.id !== workoutId);
+    return status;
+}
+
+export async function addActivityToWorkout(workoutId, activityId) {
+    const status = await fetch(
+        `/workout/${workoutId}/activity/${activityId}`,
+        {
+            method: 'POST',
+        },
+    );
+    const data = await status.json();
+
+    // Reconcile state
+    const workout = StateManager.workouts.value.find((workout) => workout.id === workoutId);
+    const activity = StateManager.activities.value.find((activity) => activity.id === activityId);
+    workout.addActivity({ activity, identifier: data });
+    StateManager.workouts.value = StateManager.workouts.value.map((w) => {
+        if (w.id === workoutId) {
+            return workout;
+        }
+        return w;
+    });
+    return data;
+}
+
+export async function removeActivityFromWorkout(workoutId, workoutSpecificIdentifier) {
+    const status = await fetch(
+        `/workout/${workoutId}/activity/${workoutSpecificIdentifier}`,
+        {
+            method: 'DELETE',
+        },
+    );
+    const data = await status.json();
+
+    // Reconcile state
+    const workout = StateManager.workouts.value.find((workout) => workout.id === workoutId);
+    workout.activities = workout.activities.filter(({ identifier }) => identifier !== workoutSpecificIdentifier);
+    StateManager.workouts.value = StateManager.workouts.value.map((w) => {
+        if (w.id === workoutId) {
+            return workout;
+        }
+        return w;
+    });
+    return data;
+}

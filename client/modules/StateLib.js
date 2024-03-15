@@ -37,7 +37,7 @@ class ValueObject {
      * Notifies all registered listeners about a change in value.
      * @private
      */
-    _notifyListeners(oldJSON) {
+    _notifyListeners() {
         this._callbacks.forEach((callback) => {
             callback(this._value);
         });
@@ -166,7 +166,8 @@ export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
                     if (queryPredicate(child, arrayElement)) {
                         // Update the element if necessary
                         if (JSON.stringify(oldElement) !== JSON.stringify(arrayElement)) {
-                            builder(arrayElement, child);
+                            const element = builder(arrayElement, child);
+                            child.replaceWith(element);
                         }
                         break;
                     }
@@ -189,7 +190,7 @@ export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
 }
 
 export const StateManager = {
-    currentPage: new State('home'),
+    currentPage: new State('workouts'),
     sidebarOpen: new State(false),
     workouts: new State([]),
     activities: new State([]),

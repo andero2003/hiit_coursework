@@ -23,3 +23,35 @@ div.grid-container {
     display: grid;
     grid-template-columns: 1fr;
 }
+
+.form-header {
+    margin: 10px;
+}
+
+.form-header>button {
+    width: 100%;
+    font-size: 20px;
+}
+
+.form-header>form>input {
+    width: 100%;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.form-header>form>button {
+    width: 100%;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.form-header>form>div {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.form-header>form>div>label {
+    margin-left: 10px;
+    font-size: 18px;
+}

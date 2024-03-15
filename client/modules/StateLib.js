@@ -140,10 +140,19 @@ export class CompoundState extends ValueObject {
     array = State([{id: 1, name: 'Jane'}, {id: 2, name: 'John'}])
 
 */
-
+/**
+ * Registers a callback to be called when the value of a state changes.
+ * `builder` takes the current array element as its parameter and returns a DOM element.
+ * `queryPredicate` takes the current DOM element and the current array element and returns a boolean whether they reference the same object.
+ * @param {State<[]>} arrayState 
+ * @param {Element} grid 
+ * @param {Function} builder 
+ * @param {Function} queryPredicate 
+ * @returns {Function} A disposal function to unregister the provided callback.
+ */
 export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
     let oldState = JSON.parse(JSON.stringify([]));
-   
+
     const update = (newArray) => {
         const newState = JSON.parse(JSON.stringify(newArray));
         // Add or update elements
@@ -164,7 +173,7 @@ export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
                 }
             }
         });
-        
+
         // Remove elements
         Array.from(grid.children).forEach(child => {
             if (!newArray.find(arrayElement => queryPredicate(child, arrayElement))) {
@@ -175,8 +184,8 @@ export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
         oldState = newState;
     };
 
-    arrayState.onChange(update);
     update(arrayState.value);
+    return arrayState.onChange(update);
 }
 
 export const StateManager = {

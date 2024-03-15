@@ -54,6 +54,7 @@ export async function updateImage(activityId, imageUrl) {
     );
 
     // Reconcile state
+    console.log("Updating image");
     StateManager.activities.value = StateManager.activities.value.map((activity) => {
         if (activity.id === activityId) {
             activity.imageUrl = imageUrl;

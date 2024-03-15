@@ -39,7 +39,7 @@ class ValueObject {
      */
     _notifyListeners(oldJSON) {
         this._callbacks.forEach((callback) => {
-            callback(this._value, oldJSON);
+            callback(this._value);
         });
     }
 
@@ -73,12 +73,8 @@ export class State extends ValueObject {
     }
 
     _updateValue(newValue) {
-        // Capture the old value before changing the state
-        const oldValueAsJSON = JSON.stringify(this._value);
-
-        // Check if the new value is different from the current value
         this._value = newValue; // Update the value
-        this._notifyListeners(oldValueAsJSON); // Notify listeners with both old and new values
+        this._notifyListeners(); // Notify listeners with both old and new values
         this._dependants.forEach((dependant) => {
             dependant.update();
         });
@@ -145,26 +141,26 @@ export class CompoundState extends ValueObject {
 
 */
 
-function valueCompare(value) {
-    if (typeof value === 'object') {
-        return JSON.stringify(value);
-    }
-    return value;
-}
-
 export function StateForEach(state, callback) {
     const array = state.value;
-    for (let i = 0; i < array.length; i++) {
-        const element = array[i];
-        callback(element, i);
-    }
-    state.onChange((newValue, oldValueJSON) => {
-        // Compare element by element to see what changed
-        for (let i = 0; i < newValue.length; i++) {
-            if (oldValueJSON !== valueCompare(newValue[i])) {
-                callback(newValue[i], i);
+    array.forEach(callback);
+    let oldMap = new Map(array.map(item => [item.id, item]));
+    state.onChange((newArray) => {
+        let newMap = new Map(newArray.map(item => [item.id, item]));
+        // Call callback for added or changed elements
+        for (let [id, newItem] of newMap) {
+            let oldItem = oldMap.get(id);
+            if (!oldItem || JSON.stringify(oldItem) !== JSON.stringify(newItem)) {
+                callback(newItem, newArray.indexOf(newItem));
             }
         }
+       // Call callback for removed elements
+       for (let [id, oldItem] of oldMap) {
+        if (!newMap.has(id)) {
+            callback(oldItem, -1);
+        }
+    }
+        oldMap = newMap;
     });
 }
 
@@ -174,3 +170,25 @@ export const StateManager = {
     workouts: new State([]),
     activities: new State([]),
 }
+
+const arr = new State([
+    { id: 1, name: 'Jane' },
+    { id: 2, name: 'John' },
+    { id: 3, name: 'Doe' },
+]);
+StateForEach(arr, (element, index) => {
+    console.log('Changed', element, ' index ', index);
+});
+
+arr.value = [
+    { id: 1, name: 'Jane' },
+    { id: 2, name: 'John' },
+    { id: 3, name: 'Doe' },
+    { id: 4, name: 'Doe' },
+];
+
+arr.value = [
+    { id: 1, name: 'Jane' },
+    { id: 3, name: 'Doe' },
+    { id: 4, name: 'Doe' },
+];

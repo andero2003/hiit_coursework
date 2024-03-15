@@ -141,27 +141,42 @@ export class CompoundState extends ValueObject {
 
 */
 
-export function StateForEach(state, callback) {
-    const array = state.value;
-    array.forEach(callback);
-    let oldMap = new Map(array.map(item => [item.id, item]));
-    state.onChange((newArray) => {
-        let newMap = new Map(newArray.map(item => [item.id, item]));
-        // Call callback for added or changed elements
-        for (let [id, newItem] of newMap) {
-            let oldItem = oldMap.get(id);
-            if (!oldItem || JSON.stringify(oldItem) !== JSON.stringify(newItem)) {
-                callback(newItem, newArray.indexOf(newItem));
+export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
+    let oldState = JSON.parse(JSON.stringify([]));
+   
+    const update = (newArray) => {
+        const newState = JSON.parse(JSON.stringify(newArray));
+        // Add or update elements
+        newArray.forEach((arrayElement) => {
+            const oldElement = oldState.find(item => item.id === arrayElement.id);
+            if (!oldElement) {
+                const element = builder(arrayElement);
+                grid.appendChild(element);
+            } else {
+                for (const child of grid.children) {
+                    if (queryPredicate(child, arrayElement)) {
+                        // Update the element if necessary
+                        if (JSON.stringify(oldElement) !== JSON.stringify(arrayElement)) {
+                            builder(arrayElement, child);
+                        }
+                        break;
+                    }
+                }
             }
-        }
-       // Call callback for removed elements
-       for (let [id, oldItem] of oldMap) {
-        if (!newMap.has(id)) {
-            callback(oldItem, -1);
-        }
-    }
-        oldMap = newMap;
-    });
+        });
+        
+        // Remove elements
+        Array.from(grid.children).forEach(child => {
+            if (!newArray.find(arrayElement => queryPredicate(child, arrayElement))) {
+                child.remove();
+            }
+        });
+
+        oldState = newState;
+    };
+
+    arrayState.onChange(update);
+    update(arrayState.value);
 }
 
 export const StateManager = {
@@ -171,24 +186,24 @@ export const StateManager = {
     activities: new State([]),
 }
 
-const arr = new State([
-    { id: 1, name: 'Jane' },
-    { id: 2, name: 'John' },
-    { id: 3, name: 'Doe' },
-]);
-StateForEach(arr, (element, index) => {
-    console.log('Changed', element, ' index ', index);
-});
+// const arr = new State([
+//     { id: 1, name: 'Jane' },
+//     { id: 2, name: 'John' },
+//     { id: 3, name: 'Doe' },
+// ]);
+// StateForEach(arr, (element, index) => {
+//     console.log('Changed', element, ' index ', index);
+// });
 
-arr.value = [
-    { id: 1, name: 'Jane' },
-    { id: 2, name: 'John' },
-    { id: 3, name: 'Doe' },
-    { id: 4, name: 'Doe' },
-];
+// arr.value = [
+//     { id: 1, name: 'Jane' },
+//     { id: 2, name: 'John' },
+//     { id: 3, name: 'Doe' },
+//     { id: 4, name: 'Doe' },
+// ];
 
-arr.value = [
-    { id: 1, name: 'Jane' },
-    { id: 3, name: 'Doe' },
-    { id: 4, name: 'Doe' },
-];
+// arr.value = [
+//     { id: 1, name: 'Jane' },
+//     { id: 3, name: 'Doe' },
+//     { id: 4, name: 'Doe' },
+// ];

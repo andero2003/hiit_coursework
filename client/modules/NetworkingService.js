@@ -54,7 +54,6 @@ export async function updateImage(activityId, imageUrl) {
     );
 
     // Reconcile state
-    console.log("Updating image");
     StateManager.activities.value = StateManager.activities.value.map((activity) => {
         if (activity.id === activityId) {
             activity.imageUrl = imageUrl;
@@ -73,3 +72,18 @@ export async function deleteActivity(activityId) {
     );
     return status;
 }
+
+export async function createNewActivity(name, description, duration, imageUrl) {
+    const newActivity = await fetch(
+        '/activity/',
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, description, duration, imageUrl }),
+        },
+    );
+    return newActivity;
+}
+

@@ -1,0 +1,18 @@
+button {
+    margin: 8px;
+    font-size: 20px;
+}
+
+#chooseWorkout>button {
+    padding: 8px;
+    width: 50%;
+}
+
+#currentWorkout .header {
+    display: flex;
+    justify-content: space-between;
+}
+
+#currentWorkout h1 {
+    padding: 8px;
+}

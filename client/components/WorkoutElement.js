@@ -1,6 +1,5 @@
-import { CleanupManager } from "../modules/CleanupManager.js";
 import { addActivityToWorkout, deleteWorkout } from "../modules/NetworkingService.js";
-import { CompoundState, ReactiveContainer, StateManager } from "../modules/StateLib.js";
+import { ReactiveContainer, StateManager } from "../modules/StateLib.js";
 
 class WorkoutElement extends HTMLElement {
     constructor() {
@@ -75,48 +74,6 @@ class WorkoutElement extends HTMLElement {
         const duration = this.shadowRoot.querySelector('.duration h3');
         duration.textContent = `Total Duration: ${this.formatDuration(totalDuration)}`;
 
-    }
-
-    startWorkout() {
-        const startWorkoutButton = this.shadowRoot.querySelector('#startWorkout');
-        startWorkoutButton.classList.add('in-progress');
-        startWorkoutButton.querySelector('img').src = './assets/Stop.png';
-        const timer = this.shadowRoot.querySelector('#timer');
-        timer.hidden = false;
-
-        const pauseWorkoutButton = this.shadowRoot.querySelector('#pauseWorkout');
-        pauseWorkoutButton.hidden = false;
-
-        this.workoutMaid.addTask(() => {
-            startWorkoutButton.classList.remove('in-progress');
-            startWorkoutButton.querySelector('img').src = './assets/Play 64.png';
-            timer.hidden = true;
-            pauseWorkoutButton.querySelector('img').src = './assets/Pause.png';
-            pauseWorkoutButton.hidden = true;
-            this.workoutTime = 0;
-            this.workoutPaused = false;
-        });
-
-        const interval = setInterval(() => {
-            if (this.workoutPaused) return;
-            this.workoutTime++;
-            const elapsedTime = this.workoutTime;
-            const minutes = Math.floor(elapsedTime / 60);
-            const seconds = ((elapsedTime % 60)).toFixed(0);
-            timer.textContent = `Elapsed: ${minutes}:${(seconds < 10 ? '0' : '')}${seconds}`;
-        }, 1000);
-
-        this.workoutMaid.addTask(() => clearInterval(interval));
-    }
-
-    pauseWorkout() {
-        this.workoutPaused = !this.workoutPaused;
-        const pauseWorkoutButton = this.shadowRoot.querySelector('#pauseWorkout');
-        pauseWorkoutButton.querySelector('img').src = this.workoutPaused ? './assets/Play 64.png' : './assets/Pause.png';
-    }
-
-    stopWorkout() {
-        this.workoutMaid.clean();
     }
 }
 

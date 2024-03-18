@@ -35,3 +35,7 @@ p {
     margin: 8px;
     width: 50%;
 }
+
+#activityImage img {
+    border-radius: 10px;
+}

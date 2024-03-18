@@ -24,6 +24,11 @@ div.grid-container {
     grid-template-columns: 1fr;
 }
 
+activity-element,
+workout-element {
+    margin: 10px;
+}
+
 .form-header {
     margin: 10px;
 }

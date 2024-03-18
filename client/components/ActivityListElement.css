@@ -10,6 +10,7 @@ div>button {
 
 .card>div {
     display: block;
+    margin: 8px;
 }
 
 #timer {

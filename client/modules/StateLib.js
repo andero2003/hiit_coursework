@@ -190,7 +190,7 @@ export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
 }
 
 export const StateManager = {
-    currentPage: new State('workouts'),
+    currentPage: new State('home'),
     sidebarOpen: new State(false),
     workouts: new State([]),
     activities: new State([]),

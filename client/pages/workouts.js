@@ -56,5 +56,6 @@ export function init(element) {
         const workout = await createNewWorkout(name, description);
         StateManager.workouts.value = [...StateManager.workouts.value, workout];
         workoutForm.hidden = true;
+        workoutForm.reset();
     });
 }

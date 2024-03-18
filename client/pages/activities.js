@@ -73,5 +73,6 @@ export function init(element) {
 
         const activity = await createNewActivity(name, description, duration, imageUrl);
         createActivityForm.hidden = true;
+        createActivityForm.reset();
     });
 }

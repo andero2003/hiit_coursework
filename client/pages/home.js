@@ -180,11 +180,6 @@ function startWorkout(element, workout) {
     const pauseWorkoutButton = element.querySelector('#pauseWorkout');
     cleanupManager.addTask(() => pauseWorkoutButton.hidden = true);
 
-    // const _timer = setInterval(() => {
-    //     elapsed.value += 0.1;
-    // }, 100); // for a more accurate timer
-    // cleanupManager.addTask(() => clearInterval(_timer));
-
     const countdown = currentWorkoutSection.querySelector('#status');
     let count = 3;
     countdown.textContent = `Starting in ${count}...`;

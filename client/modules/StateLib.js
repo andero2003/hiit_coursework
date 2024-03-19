@@ -11,6 +11,7 @@ class ValueObject {
     constructor(value) {
         this._value = value;
         this._callbacks = [];
+        this._dependants = new Set();
     }
 
     /**
@@ -19,6 +20,14 @@ class ValueObject {
     */
     get value() {
         return this._value;
+    }
+
+    set value(value) {
+        this._value = value; // Update the value
+        this._notifyListeners(); // Notify listeners with both old and new values
+        this._dependants.forEach((dependant) => {
+            dependant.update();
+        });
     }
 
     /**
@@ -44,6 +53,14 @@ class ValueObject {
     }
 
     /**
+     * Adds a dependant to be notified when the state changes.
+     * @param {Object} dependant - The dependant object to add.
+     */
+    addDependant(dependant) {
+        this._dependants.add(dependant);
+    }
+
+    /**
      * Disposes of the object and unregisters all listeners.
      */
     dispose() {
@@ -61,35 +78,6 @@ export class State extends ValueObject {
     */
     constructor(value) {
         super(value);
-        this._dependants = new Set();
-    }
-
-    /**
-     * Sets a new value for the state and notifies listeners and dependants.
-     * @param {*} value - The new value to set.
-    */
-    set value(value) {
-        this._updateValue(value);
-    }
-
-    _updateValue(newValue) {
-        this._value = newValue; // Update the value
-        this._notifyListeners(); // Notify listeners with both old and new values
-        this._dependants.forEach((dependant) => {
-            dependant.update();
-        });
-    }
-
-    get value() {
-        return this._value;
-    }
-
-    /**
-     * Adds a dependant to be notified when the state changes.
-     * @param {Object} dependant - The dependant object to add.
-     */
-    addDependant(dependant) {
-        this._dependants.add(dependant);
     }
 }
 
@@ -133,6 +121,9 @@ export class CompoundState extends ValueObject {
             return state.value;
         });
         this._notifyListeners();
+        this._dependants.forEach((dependant) => {
+            dependant.update();
+        });
     }
 }
 

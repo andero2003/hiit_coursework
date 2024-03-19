@@ -15,4 +15,27 @@ button {
 
 #currentWorkout h1 {
     padding: 8px;
+    font-size: 30px;
+}
+
+#currentActivity {
+    margin: 8px;
+}
+
+h4 {
+    margin: 8px;
+}
+
+#nextActivity {
+    margin: 8px;
+    width: 60%;
+}
+
+img {
+    width: 100%;
+}
+
+progress {
+    height: 40px;
+    width: 100%;
 }

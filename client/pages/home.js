@@ -73,11 +73,15 @@ export function init(element) {
     const currentWorkoutSection = element.querySelector('#currentWorkout');
 
     currentWorkout.onChange((workout) => {
-        cleanupManager.clean();
+        if (!workout) {
+           cleanupManager.clean();
+        }
         chooseWorkoutList.hidden = true;
         currentWorkoutSection.hidden = workout === null;
         startWorkoutButton.hidden = workout !== null;
         title.hidden = workout !== null;
+
+        localStorage.setItem('workout', JSON.stringify(workout));
     });
 
     running.onChange((isRunning) => {
@@ -90,6 +94,7 @@ export function init(element) {
     cleanupManager.addTask(() => elapsed.value = 0);
     cleanupManager.addTask(() => currentActivityIndex.value = -1);
     cleanupManager.addTask(() => activityChangedTime.value = 0);
+    cleanupManager.addTask(() => localStorage.clear());
 
 
     currentActivity.onChange((activity) => {
@@ -98,6 +103,7 @@ export function init(element) {
             activitySection.hidden = true;
             return;
         }
+
         activitySection.hidden = false;
 
         activityChangedTime.value = elapsed.value;
@@ -125,7 +131,6 @@ export function init(element) {
         const progressElement = activitySection.querySelector('progress');
         progressElement.value = 100 - progress * 100;
     });
-    
 
     const workouts = StateManager.workouts;
     ReactiveContainer(workouts, chooseWorkoutList, (workout) => {
@@ -150,16 +155,36 @@ export function init(element) {
     pauseWorkoutButton.addEventListener('click', () => {
         running.value = !running.value;
     });
+
+    loadFromLocalStorage(element);
+}
+
+function loadFromLocalStorage(element) {
+    // load from local storage
+    const savedWorkout = JSON.parse(localStorage.getItem('workout'));
+    if (savedWorkout) {
+        // restore in progress workout
+        const restoredState = {
+            elapsed: JSON.parse(localStorage.getItem('elapsed')),
+            activityChangedTime: JSON.parse(localStorage.getItem('activityChangedTime')),
+            currentActivityIndex: JSON.parse(localStorage.getItem('currentActivityIndex'))
+        };
+        currentWorkout.value = savedWorkout;
+        startWorkout(element, savedWorkout, restoredState);
+    }
 }
 
 function startTimer() {
     const _timer = setInterval(() => {
         if (!running.value) { return; }
         elapsed.value += 0.1;
+        localStorage.setItem('elapsed', JSON.stringify(elapsed.value));
         if (!currentActivity.value) { return; }
         if (elapsed.value >= currentActivity.value.duration + activityChangedTime.value) {
             currentActivityIndex.value++;
+            localStorage.setItem('activityChangedTime', JSON.stringify(elapsed.value));
         }
+        localStorage.setItem('currentActivityIndex', JSON.stringify(currentActivityIndex.value));
         if (currentActivityIndex.value >= currentWorkout.value.activities.length) {
             currentWorkout.value = null;
         }
@@ -167,7 +192,7 @@ function startTimer() {
     cleanupManager.addTask(() => clearInterval(_timer));
 }
 
-function startWorkout(element, workout) {
+function startWorkout(element, workout, restoredState) {
     const currentWorkoutSection = element.querySelector('#currentWorkout');
     const title = currentWorkoutSection.querySelector('h3');
     title.textContent = workout.name;
@@ -180,16 +205,25 @@ function startWorkout(element, workout) {
     const pauseWorkoutButton = element.querySelector('#pauseWorkout');
     cleanupManager.addTask(() => pauseWorkoutButton.hidden = true);
 
+    console.log(restoredState);
+
     const countdown = currentWorkoutSection.querySelector('#status');
     let count = 3;
-    countdown.textContent = `Starting in ${count}...`;
+    countdown.textContent = `${restoredState ? 'Resuming' : 'Starting'} in ${count}...`;
     const _countdown = setInterval(() => {
         count--;
-        countdown.textContent = `Starting in ${count}...`;
+        countdown.textContent = `${restoredState ? 'Resuming' : 'Starting'} in ${count}...`;
         if (count === 0) {
             clearInterval(_countdown);
             countdown.textContent = 'Go!';
-            currentActivityIndex.value++;
+            if (restoredState) {
+                elapsed.value = restoredState.elapsed;
+                currentActivityIndex.value = restoredState.currentActivityIndex;
+                activityChangedTime.value = restoredState.activityChangedTime;
+            } else {
+                currentActivityIndex.value++;
+                localStorage.setItem('activityChangedTime', JSON.stringify(elapsed.value));
+            }
             running.value = true;
             cleanupManager.addTask(() => running.value = false);
             pauseWorkoutButton.hidden = false;

@@ -1,4 +1,5 @@
 import { removeActivityFromWorkout } from "../modules/NetworkingService.js";
+import { formatDuration } from "../modules/Utils.js";
 
 class ActivityListElement extends HTMLElement {
     constructor() {
@@ -9,13 +10,6 @@ class ActivityListElement extends HTMLElement {
         this.attachShadow({ mode: 'open' }).appendChild(templateContent.cloneNode(true));
     }
 
-    formatDuration() {
-        const durationAsDate = new Date(this.getAttribute('duration') * 1000)
-        const minutes = String(durationAsDate.getMinutes()).padStart(2, '0');
-        const seconds = String(durationAsDate.getSeconds()).padStart(2, '0');
-        return `${minutes}:${seconds}`;
-    }
-
     connectedCallback() {
         const name = this.shadowRoot.querySelector('h3');
         name.textContent = this.getAttribute('name');
@@ -24,7 +18,7 @@ class ActivityListElement extends HTMLElement {
         activityImage.src = this.getAttribute('imageUrl');
 
         const timer = this.shadowRoot.querySelector('#timer p');
-        timer.textContent = this.formatDuration();
+        timer.textContent = formatDuration(this.getAttribute('duration'));
 
         const deleteButton = this.shadowRoot.querySelector('#removeActivityFromWorkout');
         deleteButton.addEventListener('click', async () => {

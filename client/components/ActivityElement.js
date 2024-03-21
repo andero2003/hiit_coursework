@@ -1,5 +1,6 @@
 import { deleteActivity, updateImage } from "../modules/NetworkingService.js";
 import { StateManager } from "../modules/StateLib.js";
+import { formatDuration } from "../modules/Utils.js";
 
 class ActivityElement extends HTMLElement {
     constructor() {
@@ -13,7 +14,7 @@ class ActivityElement extends HTMLElement {
     connectedCallback() {
         this.shadowRoot.querySelector('#name').textContent = this.getAttribute('name');
         this.shadowRoot.querySelector('#description').textContent = this.getAttribute('description');
-        this.shadowRoot.querySelector('#duration').textContent = this.formatDuration();
+        this.shadowRoot.querySelector('#duration').textContent = formatDuration(this.getAttribute('duration'));
         this.shadowRoot.querySelector('#activityImage img').src = this.getAttribute('imageUrl');
 
         this.setupDeleteButton();
@@ -22,13 +23,6 @@ class ActivityElement extends HTMLElement {
 
     updateImage() {
         this.shadowRoot.querySelector('#activityImage img').src = this.getAttribute('imageUrl');
-    }
-
-    formatDuration() {
-        const durationAsDate = new Date(this.getAttribute('duration') * 1000)
-        const minutes = String(durationAsDate.getMinutes()).padStart(2, '0');
-        const seconds = String(durationAsDate.getSeconds()).padStart(2, '0');
-        return `${minutes}:${seconds}`;
     }
 
     setupEditImageButton() {

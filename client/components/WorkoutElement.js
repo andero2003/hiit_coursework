@@ -1,5 +1,6 @@
 import { addActivityToWorkout, deleteWorkout } from "../modules/NetworkingService.js";
 import { ReactiveContainer, StateManager } from "../modules/StateLib.js";
+import { formatDuration } from "../modules/Utils.js";
 
 class WorkoutElement extends HTMLElement {
     constructor() {
@@ -49,13 +50,6 @@ class WorkoutElement extends HTMLElement {
         });
     }
 
-    formatDuration(dur) {
-        const durationAsDate = new Date(dur * 1000)
-        const minutes = String(durationAsDate.getMinutes()).padStart(2, '0');
-        const seconds = String(durationAsDate.getSeconds()).padStart(2, '0');
-        return `${minutes}:${seconds}`;
-    }
-
     addActivities(activities) {
         const activitiesList = this.shadowRoot.querySelector('#activitiesList');
         let totalDuration = 0;
@@ -72,7 +66,7 @@ class WorkoutElement extends HTMLElement {
             totalDuration += activity.duration;
         }
         const duration = this.shadowRoot.querySelector('.duration h3');
-        duration.textContent = `Total Duration: ${this.formatDuration(totalDuration)}`;
+        duration.textContent = `Total Duration: ${formatDuration(totalDuration)}`;
 
     }
 }

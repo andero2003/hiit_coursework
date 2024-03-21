@@ -39,3 +39,7 @@ progress {
     height: 40px;
     width: 100%;
 }
+
+#remaining {
+    font-size: 22px;
+}

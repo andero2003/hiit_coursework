@@ -9,4 +9,8 @@ export class Workout {
     addActivity(activity) {
         this.activities.push(activity);
     }
+
+    get duration() {
+        return this.activities.reduce((acc, { activity }) => acc + activity.duration, 0);
+    }
 }

@@ -1,5 +1,6 @@
 import { CleanupManager } from "../modules/CleanupManager.js";
 import { CompoundState, ReactiveContainer, State, StateManager } from "../modules/StateLib.js";
+import { formatDuration } from "../modules/Utils.js";
 
 const content = `
 <link rel="stylesheet" href="/styles/global.css">
@@ -17,8 +18,9 @@ const content = `
     <h1 id="status"></h1>
     <section id="currentActivity" class="card" hidden>
         <progress value="0" max="100"></progress>
+        <p id="remaining">Remaining Time</p>
         <h2>Activity</h2>
-        <p>Activity description</p>
+        <p id="description">Activity description</p>
         <img src="" alt="Activity Image">
     </section>
     <h4>Next Activity</h4>
@@ -30,10 +32,11 @@ const content = `
 `
 
 const cleanupManager = new CleanupManager();
+
+// simple states
 const currentWorkout = new State(null);
 const elapsed = new State(0);
 const running = new State(false);
-
 const activityChangedTime = new State(0);
 const currentActivityIndex = new State(-1);
 
@@ -74,13 +77,13 @@ export function init(element) {
 
     currentWorkout.onChange((workout) => {
         if (!workout) {
-           cleanupManager.clean();
+            cleanupManager.clean();        
         }
         chooseWorkoutList.hidden = true;
         currentWorkoutSection.hidden = workout === null;
         startWorkoutButton.hidden = workout !== null;
         title.hidden = workout !== null;
-
+    
         localStorage.setItem('workout', JSON.stringify(workout));
     });
 
@@ -88,8 +91,18 @@ export function init(element) {
         pauseWorkoutButton.textContent = isRunning ? 'Pause' : 'Resume';
     });
 
+    const activitySection = element.querySelector('#currentActivity');
+
     elapsed.onChange((time) => {
-        currentWorkoutSection.querySelector('h1').textContent = `Elapsed Time: ${time.toFixed(1)}s`;
+        currentWorkoutSection.querySelector('h1').textContent = `Elapsed Time: ${formatDuration(time)}`;
+        const remainingLabel = activitySection.querySelector('#remaining');
+        const activity = currentActivity.value;
+        if (!activity) {
+            remainingLabel.textContent = '';
+            return;
+        }
+        const remaining = activity.duration - (time - activityChangedTime.value) + 1;
+        remainingLabel.textContent = `Remaining: ${formatDuration(remaining)}`;
     });
     cleanupManager.addTask(() => elapsed.value = 0);
     cleanupManager.addTask(() => currentActivityIndex.value = -1);
@@ -98,7 +111,6 @@ export function init(element) {
 
 
     currentActivity.onChange((activity) => {
-        const activitySection = element.querySelector('#currentActivity');
         if (!activity) {
             activitySection.hidden = true;
             return;
@@ -110,7 +122,7 @@ export function init(element) {
 
         activitySection.hidden = false;
         activitySection.querySelector('h2').textContent = activity.name;
-        activitySection.querySelector('p').textContent = activity.description;
+        activitySection.querySelector('#description').textContent = activity.description;
         activitySection.querySelector('img').src = activity.imageUrl;
     });
 
@@ -204,8 +216,6 @@ function startWorkout(element, workout, restoredState) {
 
     const pauseWorkoutButton = element.querySelector('#pauseWorkout');
     cleanupManager.addTask(() => pauseWorkoutButton.hidden = true);
-
-    console.log(restoredState);
 
     const countdown = currentWorkoutSection.querySelector('#status');
     let count = 3;

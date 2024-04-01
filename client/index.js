@@ -1,4 +1,4 @@
-import { getActivities, getWorkouts } from "./modules/NetworkingService.js";
+import { getActivities, getWorkoutHistory, getWorkouts } from "./modules/NetworkingService.js";
 import { State, CompoundState, StateManager } from "./modules/StateLib.js";
 
 const ui = {
@@ -23,6 +23,11 @@ const pages = [
         title: 'Activities',
         image: './assets/Strong Arm 64.png',
     },
+    {
+        name: 'history',
+        title: 'History',
+        image: './assets/Calendar 64.png',
+    }
 ]
 
 function createSidebarButton(page) {
@@ -120,6 +125,7 @@ setupSidebar();
 async function fetchData() {
     await getActivities();
     await getWorkouts();
+    await getWorkoutHistory();
 }
 
 fetchData();

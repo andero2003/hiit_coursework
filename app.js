@@ -11,6 +11,9 @@ app.use(express.static('client', { extensions: ['html'] }));
 const activityRouter = express.Router();
 app.use('/activity', activityRouter);
 
+const historyRouter = express.Router();
+app.use('/history', historyRouter);
+
 // Get all activities
 activityRouter.get('/', express.json(), async (req, res) => {
     if (req.query.ids) {
@@ -79,6 +82,16 @@ workoutRouter.delete('/activity/:id', async (req, res) => {
 workoutRouter.delete('/:id', async (req, res) => {
     const status = await database.deleteWorkout(req.params.id);
     res.json(status);
+});
+
+historyRouter.post('/', express.json(), async (req, res) => {
+    const status = await database.addWorkoutRecordToHistory(req.body.workoutId, req.body.start, req.body.end);
+    res.json(status);
+});
+
+historyRouter.get('/', async (req, res) => {
+    const history = await database.getWorkoutHistory();
+    res.json(history);
 });
 
 app.listen(port, () => {

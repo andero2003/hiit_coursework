@@ -176,3 +176,28 @@ export async function removeActivityFromWorkout(workoutId, workoutSpecificIdenti
     });
     return data;
 }
+
+export async function recordWorkoutInHistory(workoutId, start, end) {
+    const status = await fetch(
+        `/history/`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ workoutId, start, end }),
+        },
+    );
+    return status;
+}
+
+export async function getWorkoutHistory() {
+    const history = await fetch(
+        `/history/`,
+    );
+
+    // Reconcile state
+    StateManager.history.value = await history.json();
+    console.log(StateManager.history.value);
+    return true;
+}

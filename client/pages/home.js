@@ -1,4 +1,5 @@
 import { CleanupManager } from "../modules/CleanupManager.js";
+import { recordWorkoutInHistory } from "../modules/NetworkingService.js";
 import { CompoundState, ReactiveContainer, State, StateManager } from "../modules/StateLib.js";
 import { formatDuration } from "../modules/Utils.js";
 
@@ -35,6 +36,7 @@ const cleanupManager = new CleanupManager();
 
 // simple states
 const currentWorkout = new State(null);
+const startTime = new State(null);
 const elapsed = new State(0);
 const running = new State(false);
 const activityChangedTime = new State(0);
@@ -168,6 +170,14 @@ export function init(element) {
     loadFromLocalStorage(element);
 }
 
+function recordWorkout(workoutId) {
+    const start = startTime.value;
+    const end = new Date();
+    
+    recordWorkoutInHistory(workoutId, start.toISOString(), end.toISOString());
+    startTime.value = null;
+}
+
 function loadFromLocalStorage(element) {
     // load from local storage
     const savedWorkout = JSON.parse(localStorage.getItem('workout'));
@@ -202,6 +212,7 @@ function startTimer() {
 
         // check if the workout is done
         if (currentActivityIndex.value >= currentWorkout.value.activities.length) {
+            recordWorkout(currentWorkout.value.id);
             currentWorkout.value = null;
         }
     }, 100); // for a more accurate timer
@@ -217,6 +228,7 @@ function startWorkout(element, workout, restoredState) {
 
     const cancelWorkoutButton = currentWorkoutSection.querySelector('.cancel-button');
     cancelWorkoutButton.addEventListener('click', () => {
+        recordWorkout(currentWorkout.value.id);
         currentWorkout.value = null;
     });
 
@@ -232,6 +244,7 @@ function startWorkout(element, workout, restoredState) {
         if (count === 0) {
             clearInterval(_countdown);
             countdown.textContent = 'Go!';
+            startTime.value = new Date();
             if (restoredState) {
                 // restored state is passed in case the workout is being resumed (loaded from local storage)
                 elapsed.value = restoredState.elapsed;

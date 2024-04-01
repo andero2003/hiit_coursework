@@ -148,3 +148,16 @@ export async function deleteWorkout(id) {
     await db.run(`DELETE FROM workout WHERE id = ?;`, id);
     return await getWorkouts();
 }
+
+export async function addWorkoutRecordToHistory(workoutId, startTime, endTime) {
+    const db = await dbConn;
+    const id = uuid();
+    await db.run(`INSERT INTO workoutHistory (id, workoutId, startTime, endTime) VALUES (?, ?, ?, ?);`, [id, workoutId, startTime, endTime]);
+    return id;
+}
+
+export async function getWorkoutHistory() {
+    const db = await dbConn;
+    const rows = await db.all(`SELECT * FROM workoutHistory;`);
+    return rows;
+}

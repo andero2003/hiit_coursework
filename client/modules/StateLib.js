@@ -186,4 +186,5 @@ export const StateManager = {
     sidebarOpen: new State(false),
     workouts: new State([]),
     activities: new State([]),
+    history: new State([])
 }

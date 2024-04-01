@@ -1,3 +1,5 @@
+// inspired by the idea of "Maid" classes from Roblox game development
+
 export class CleanupManager {
     constructor() {
         this.tasks = [];

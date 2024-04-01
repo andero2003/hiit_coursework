@@ -40,32 +40,25 @@ const running = new State(false);
 const activityChangedTime = new State(0);
 const currentActivityIndex = new State(-1);
 
-// derived states
+// derived states that change based on the simple states
 const currentActivity = new CompoundState(use => {
     const workout = use(currentWorkout);
-    if (workout === null) {
-        return null;
-    }
     const index = use(currentActivityIndex);
-    return workout.activities[index]?.activity;
+    return workout?.activities[index]?.activity;
 });
 const nextActivity = new CompoundState(use => {
     const workout = use(currentWorkout);
-    if (!workout) {
-        return null;
-    }
     const index = use(currentActivityIndex) + 1;
-    return workout.activities[index]?.activity;
+    return workout?.activities[index]?.activity;
 });
 const currentActivityProgress = new CompoundState(use => {
     const activity = use(currentActivity);
-    if (!activity) {
-        return 0;
-    }
+    if (!activity) { return 0; }
     const time = use(elapsed) - use(activityChangedTime);
     return time / activity.duration;
 });
 
+// main page initialization
 export function init(element) {
     element.innerHTML = content;
 
@@ -76,14 +69,17 @@ export function init(element) {
     const currentWorkoutSection = element.querySelector('#currentWorkout');
 
     currentWorkout.onChange((workout) => {
-        if (!workout) {
+        if (!workout) { // clean up all the state from the previous workout if it is changed to null (meaning a workout has ended)
             cleanupManager.clean();        
         }
+
+        // default element visibility depending on the workout state
         chooseWorkoutList.hidden = true;
         currentWorkoutSection.hidden = workout === null;
         startWorkoutButton.hidden = workout !== null;
         title.hidden = workout !== null;
     
+        // update the workout in local storage to persist the state between page reloads
         localStorage.setItem('workout', JSON.stringify(workout));
     });
 
@@ -92,7 +88,6 @@ export function init(element) {
     });
 
     const activitySection = element.querySelector('#currentActivity');
-
     elapsed.onChange((time) => {
         currentWorkoutSection.querySelector('h1').textContent = `Elapsed Time: ${formatDuration(time)}`;
         const remainingLabel = activitySection.querySelector('#remaining');
@@ -104,23 +99,21 @@ export function init(element) {
         const remaining = activity.duration - (time - activityChangedTime.value) + 1;
         remainingLabel.textContent = `Remaining: ${formatDuration(remaining)}`;
     });
+
+    // cleanup the state when the workout is done
     cleanupManager.addTask(() => elapsed.value = 0);
     cleanupManager.addTask(() => currentActivityIndex.value = -1);
     cleanupManager.addTask(() => activityChangedTime.value = 0);
     cleanupManager.addTask(() => localStorage.clear());
 
-
     currentActivity.onChange((activity) => {
-        if (!activity) {
+        if (!activity) { // no more activities in the workout
             activitySection.hidden = true;
             return;
         }
 
         activitySection.hidden = false;
-
         activityChangedTime.value = elapsed.value;
-
-        activitySection.hidden = false;
         activitySection.querySelector('h2').textContent = activity.name;
         activitySection.querySelector('#description').textContent = activity.description;
         activitySection.querySelector('img').src = activity.imageUrl;
@@ -138,6 +131,7 @@ export function init(element) {
         activitySection.querySelector('img').src = activity.imageUrl;
     });
 
+    // handle progress bar for the current activity
     currentActivityProgress.onChange((progress) => {
         const activitySection = element.querySelector('#currentActivity');
         const progressElement = activitySection.querySelector('progress');
@@ -145,6 +139,8 @@ export function init(element) {
     });
 
     const workouts = StateManager.workouts;
+
+    // this will populate the list of workouts to choose from on home page, updating dynamically whenever the workouts list changes
     ReactiveContainer(workouts, chooseWorkoutList, (workout) => {
         const workoutElement = document.createElement('button');
         workoutElement.setAttribute('workoutId', workout.id);
@@ -168,6 +164,7 @@ export function init(element) {
         running.value = !running.value;
     });
 
+    // check for workout to resume from local storage
     loadFromLocalStorage(element);
 }
 
@@ -188,19 +185,28 @@ function loadFromLocalStorage(element) {
 
 function startTimer() {
     const _timer = setInterval(() => {
-        if (!running.value) { return; }
+        if (!running.value) { return; } // workout is paused
         elapsed.value += 0.1;
+
+        // save the state to local storage
         localStorage.setItem('elapsed', JSON.stringify(elapsed.value));
+
         if (!currentActivity.value) { return; }
+
+        // check if the current activity is done
         if (elapsed.value >= currentActivity.value.duration + activityChangedTime.value) {
             currentActivityIndex.value++;
             localStorage.setItem('activityChangedTime', JSON.stringify(elapsed.value));
         }
         localStorage.setItem('currentActivityIndex', JSON.stringify(currentActivityIndex.value));
+
+        // check if the workout is done
         if (currentActivityIndex.value >= currentWorkout.value.activities.length) {
             currentWorkout.value = null;
         }
     }, 100); // for a more accurate timer
+
+    // cleanup the timer when the workout is done / cancelled
     cleanupManager.addTask(() => clearInterval(_timer));
 }
 
@@ -227,11 +233,12 @@ function startWorkout(element, workout, restoredState) {
             clearInterval(_countdown);
             countdown.textContent = 'Go!';
             if (restoredState) {
+                // restored state is passed in case the workout is being resumed (loaded from local storage)
                 elapsed.value = restoredState.elapsed;
                 currentActivityIndex.value = restoredState.currentActivityIndex;
                 activityChangedTime.value = restoredState.activityChangedTime;
             } else {
-                currentActivityIndex.value++;
+                currentActivityIndex.value++; // initial value is -1 so we increment it to start the first activity
                 localStorage.setItem('activityChangedTime', JSON.stringify(elapsed.value));
             }
             running.value = true;
@@ -239,6 +246,7 @@ function startWorkout(element, workout, restoredState) {
             pauseWorkoutButton.hidden = false;
         }
     }, 1000);
+    cleanupManager.addTask(() => clearInterval(_countdown)); // state cleanup handler in case the workout is cancelled during the countdown
 
     startTimer();
 }

@@ -2,6 +2,8 @@ import { Activity } from "../models/Activity.js";
 import { Workout } from "../models/Workout.js";
 import { StateManager } from "./StateLib.js";
 
+// this module is essentially just a facade for interacting with the server and database
+
 export async function getActivities() {
     const activities = await fetch(
         `/activity`,

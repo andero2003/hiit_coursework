@@ -29,7 +29,7 @@ async function init() {
         id TEXT PRIMARY KEY,
         workoutId TEXT,
         startTime TEXT,
-        endTime TEXT,
+        endTime TEXT
     )`)
 
     return db;

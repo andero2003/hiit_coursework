@@ -132,7 +132,7 @@ export class CompoundState extends ValueObject {
 
 */
 /**
- * Registers a callback to be called when the value of a state changes.
+ * Optimised container for reactive rendering of arrays. Only updates the DOM elements that have changed.
  * `builder` takes the current array element as its parameter and returns a DOM element.
  * `queryPredicate` takes the current DOM element and the current array element and returns a boolean whether they reference the same object.
  * @param {State<[]>} arrayState 
@@ -180,31 +180,10 @@ export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
     return arrayState.onChange(update);
 }
 
+// single source of truth for the entire application state
 export const StateManager = {
     currentPage: new State('home'),
     sidebarOpen: new State(false),
     workouts: new State([]),
     activities: new State([]),
 }
-
-// const arr = new State([
-//     { id: 1, name: 'Jane' },
-//     { id: 2, name: 'John' },
-//     { id: 3, name: 'Doe' },
-// ]);
-// StateForEach(arr, (element, index) => {
-//     console.log('Changed', element, ' index ', index);
-// });
-
-// arr.value = [
-//     { id: 1, name: 'Jane' },
-//     { id: 2, name: 'John' },
-//     { id: 3, name: 'Doe' },
-//     { id: 4, name: 'Doe' },
-// ];
-
-// arr.value = [
-//     { id: 1, name: 'Jane' },
-//     { id: 3, name: 'Doe' },
-//     { id: 4, name: 'Doe' },
-// ];

@@ -38,6 +38,7 @@ export function init(element) {
     const grid = element.querySelector('.grid-container');
     const activities = StateManager.activities;
 
+    // this will populate the grid with activities and update dynamically when the activities list changes
     ReactiveContainer(activities, grid, (activity) => {
         const activityElement = document.createElement('activity-element');
         updateActivityElement(activityElement, activity);
@@ -60,7 +61,7 @@ export function init(element) {
 
     const submitActivity = element.querySelector('#submitActivity');
     submitActivity.addEventListener('click', async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // since the button is inside a form, we need to prevent the default form submission (page reload)
         const name = createActivityForm.querySelector('#activityName').value;
         if (!name) return;
         const description = createActivityForm.querySelector('#activityDescription').value;
@@ -71,8 +72,8 @@ export function init(element) {
         let imageUrl = createActivityForm.querySelector('#activityImageUrl').value;
         if (!imageUrl) imageUrl = 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif';
 
-        const activity = await createNewActivity(name, description, duration, imageUrl);
+        await createNewActivity(name, description, duration, imageUrl);
         createActivityForm.hidden = true;
-        createActivityForm.reset();
+        createActivityForm.reset(); // clear the form
     });
 }

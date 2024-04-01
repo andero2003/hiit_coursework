@@ -1,5 +1,5 @@
 import { createNewWorkout } from "../modules/NetworkingService.js";
-import { StateManager, ReactiveContainer, CompoundState } from "../modules/StateLib.js";
+import { StateManager, ReactiveContainer } from "../modules/StateLib.js";
 
 const content = `
 <link rel="stylesheet" href="/styles/global.css">
@@ -31,6 +31,7 @@ export function init(element) {
     const grid = element.querySelector('.grid-container');
     const workouts = StateManager.workouts;
 
+    // this will populate the grid with workouts and update dynamically when the workouts list changes
     ReactiveContainer(workouts, grid, (workout) => {
         const workoutElement = document.createElement('workout-element');
         updateWorkoutElement(workoutElement, workout);
@@ -47,15 +48,14 @@ export function init(element) {
 
     const submitWorkout = element.querySelector('#submitWorkout');
     submitWorkout.addEventListener('click', async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // since the button is inside a form, we need to prevent the default form submission (page reload)
         const name = workoutForm.querySelector('#workoutName').value;
         if (!name) return;
         const description = workoutForm.querySelector('#workoutDescription').value;
         if (!description) return;
 
-        const workout = await createNewWorkout(name, description);
-        StateManager.workouts.value = [...StateManager.workouts.value, workout];
+        await createNewWorkout(name, description);
         workoutForm.hidden = true;
-        workoutForm.reset();
+        workoutForm.reset(); // clear the form
     });
 }

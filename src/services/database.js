@@ -28,6 +28,7 @@ async function init() {
     await db.exec(`CREATE TABLE IF NOT EXISTS workoutHistory (
         id TEXT PRIMARY KEY,
         workoutId TEXT,
+        date TEXT,
         startTime TEXT,
         endTime TEXT
     )`)
@@ -149,10 +150,10 @@ export async function deleteWorkout(id) {
     return await getWorkouts();
 }
 
-export async function addWorkoutRecordToHistory(workoutId, startTime, endTime) {
+export async function addWorkoutRecordToHistory(workoutId, date, startTime, endTime) {
     const db = await dbConn;
     const id = uuid();
-    await db.run(`INSERT INTO workoutHistory (id, workoutId, startTime, endTime) VALUES (?, ?, ?, ?);`, [id, workoutId, startTime, endTime]);
+    await db.run(`INSERT INTO workoutHistory (id, workoutId, date, startTime, endTime) VALUES (?, ?, ?, ?, ?);`, [id, workoutId, date, startTime, endTime]);
     return id;
 }
 
@@ -160,4 +161,10 @@ export async function getWorkoutHistory() {
     const db = await dbConn;
     const rows = await db.all(`SELECT * FROM workoutHistory;`);
     return rows;
+}
+
+export async function deleteWorkoutRecordFromHistory(id) {
+    const db = await dbConn;
+    await db.run(`DELETE FROM workoutHistory WHERE id = ?;`, id);
+    return true;
 }

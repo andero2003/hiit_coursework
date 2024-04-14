@@ -174,7 +174,25 @@ function recordWorkout(workoutId) {
     const start = startTime.value;
     const end = new Date();
     
-    recordWorkoutInHistory(workoutId, start.toISOString(), end.toISOString());
+    const formattedDate = (date) =>        
+        date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        }
+    )
+
+    const formattedTime = (date) => 
+        date.toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: true,
+        }
+    ) 
+
+    recordWorkoutInHistory(workoutId, formattedDate(start), formattedTime(start), formattedTime(end));
     startTime.value = null;
 }
 
@@ -228,7 +246,9 @@ function startWorkout(element, workout, restoredState) {
 
     const cancelWorkoutButton = currentWorkoutSection.querySelector('.cancel-button');
     cancelWorkoutButton.addEventListener('click', () => {
-        recordWorkout(currentWorkout.value.id);
+        if (startTime.value) {
+            recordWorkout(currentWorkout.value.id);
+        }
         currentWorkout.value = null;
     });
 

@@ -85,13 +85,18 @@ workoutRouter.delete('/:id', async (req, res) => {
 });
 
 historyRouter.post('/', express.json(), async (req, res) => {
-    const status = await database.addWorkoutRecordToHistory(req.body.workoutId, req.body.start, req.body.end);
+    const status = await database.addWorkoutRecordToHistory(req.body.workoutId, req.body.date, req.body.start, req.body.end);
     res.json(status);
 });
 
 historyRouter.get('/', async (req, res) => {
     const history = await database.getWorkoutHistory();
     res.json(history);
+});
+
+historyRouter.delete('/:id', async (req, res) => {
+    const status = await database.deleteWorkoutRecordFromHistory(req.params.id);
+    res.json(status);
 });
 
 app.listen(port, () => {

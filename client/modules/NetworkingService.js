@@ -177,7 +177,7 @@ export async function removeActivityFromWorkout(workoutId, workoutSpecificIdenti
     return data;
 }
 
-export async function recordWorkoutInHistory(workoutId, start, end) {
+export async function recordWorkoutInHistory(workoutId, date, start, end) {
     const status = await fetch(
         `/history/`,
         {
@@ -185,9 +185,11 @@ export async function recordWorkoutInHistory(workoutId, start, end) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ workoutId, start, end }),
+            body: JSON.stringify({ workoutId, date, start, end }),
         },
     );
+    // Reconcile state
+    getWorkoutHistory();
     return status;
 }
 
@@ -198,6 +200,18 @@ export async function getWorkoutHistory() {
 
     // Reconcile state
     StateManager.history.value = await history.json();
-    console.log(StateManager.history.value);
     return true;
+}
+
+export async function deleteHistoryEntry(historyId) {
+    const status = await fetch(
+        `/history/${historyId}`,
+        {
+            method: 'DELETE',
+        },
+    );
+
+    // Reconcile state
+    StateManager.history.value = StateManager.history.value.filter((entry) => entry.id !== historyId);
+    return status;
 }

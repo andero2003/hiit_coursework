@@ -1,0 +1,14 @@
+h3 {
+    padding: 0;
+}
+
+.entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+}
+
+.entry-header button {
+    height: 40px;
+}

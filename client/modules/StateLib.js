@@ -127,10 +127,6 @@ export class CompoundState extends ValueObject {
     }
 }
 
-/*
-    array = State([{id: 1, name: 'Jane'}, {id: 2, name: 'John'}])
-
-*/
 /**
  * Optimised container for reactive rendering of arrays. Only updates the DOM elements that have changed.
  * `builder` takes the current array element as its parameter and returns a DOM element.

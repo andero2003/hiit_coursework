@@ -16,6 +16,13 @@
     padding: 12px 12px;
 }
 
+@media (min-width: 768px) {
+    #sidebar {
+        width: 16%;
+        padding: 12px 12px;
+    }
+}
+
 #sidebar button {
     text-decoration: none;
     width: 100%;
@@ -37,14 +44,4 @@
 #sidebar button:hover {
     background-color: #262531;
     color: #ffffff;
-}
-
-#toggleSidebar {
-    background-color: #08070f;
-    position: fixed;
-    z-index: 1;
-    bottom: 8px;
-    left: 10px;
-    transition: 0.25s;
-    font-size: 24px;
 }

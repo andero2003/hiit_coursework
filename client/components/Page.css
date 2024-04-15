@@ -1,3 +1,10 @@
+
+@media (min-width: 768px) {
+    section.page {
+        margin-left: calc(16% + 24px);
+    }
+}
+
 header {
     position: relative;
     width: auto;
@@ -21,7 +28,7 @@ h3 {
 div.grid-container {
     padding: 10px;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
 }
 
 activity-element,

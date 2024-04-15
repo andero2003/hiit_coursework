@@ -5,7 +5,7 @@ button {
 
 #chooseWorkout>button {
     padding: 8px;
-    width: 50%;
+    width: clamp(200px, 30%, 400px);
 }
 
 #currentWorkout .header {

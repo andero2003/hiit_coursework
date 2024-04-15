@@ -1,11 +1,5 @@
 import { getActivities, getWorkoutHistory, getWorkouts } from "./modules/NetworkingService.js";
-import { State, CompoundState, StateManager } from "./modules/StateLib.js";
-
-const ui = {
-    body: document.querySelector('body'),
-    sidebar: document.querySelector('#sidebar'),
-    pages: []
-}
+import { StateManager } from "./modules/StateLib.js";
 
 const pages = [
     {
@@ -36,12 +30,13 @@ function createSidebarButton(page) {
         <img src="${page.image}" />
         ${page.title}
     `;
-    ui.sidebar.append(sidebarButton);
 
     sidebarButton.addEventListener('click', () => {
         StateManager.currentPage.value = page.name;
         StateManager.sidebarOpen.value = false;
     });
+
+    document.querySelector('#sidebar').append(sidebarButton);
 }
 
 async function setupPages() {
@@ -58,10 +53,11 @@ async function setupPages() {
         const div = document.createElement('div');
         div.slot = 'content';
 
+        // load in the page specific content
         const module = await import(`./pages/${page.name}.js`);
         module.init(div);
 
-        pageElement.shadowRoot.append(div);
+        pageElement.shadowRoot.querySelector('slot').append(div);
 
         // inject reactive state
         pageElement.hidden = StateManager.currentPage.value !== page.name;
@@ -69,8 +65,7 @@ async function setupPages() {
             pageElement.hidden = newPage !== page.name;
         });
 
-        ui.pages.push(pageElement);
-        ui.body.append(pageElement);
+        document.querySelector('body').append(pageElement);
     }
 }
 
@@ -89,12 +84,7 @@ function hideSidebar() {
 //
 
 function setupSidebar() {
-    const toggleSidebar = document.querySelector('#toggleSidebar');
     const sidebar = document.querySelector('#sidebar');
-
-    toggleSidebar.addEventListener('click', () => {
-        StateManager.sidebarOpen.value = !StateManager.sidebarOpen.value;
-    });
 
     StateManager.sidebarOpen.onChange((value) => {
         sidebar.classList.toggle('open', value);

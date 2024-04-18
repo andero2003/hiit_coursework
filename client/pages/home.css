@@ -4,8 +4,10 @@ button {
 }
 
 #chooseWorkout>button {
+    margin-left: 0;
+    margin-right: 0;
     padding: 8px;
-    width: clamp(200px, 30%, 400px);
+    width: 100%;
 }
 
 #currentWorkout .header {
@@ -42,4 +44,11 @@ progress {
 
 #remaining {
     font-size: 22px;
+}
+
+#closeDialog {
+    width: 100%;
+    margin-top: 8px;
+    margin-left: 0;
+    margin-right: 0;
 }

@@ -20,7 +20,6 @@ p {
 }
 
 #addActivityList {
-    display: none;
     margin-top: 8px;
 }
 
@@ -46,4 +45,9 @@ p {
 
 .duration>h3 {
     margin-left: 10px;
+}
+
+#closeDialog {
+    width: 100%;
+    margin-top: 8px;
 }

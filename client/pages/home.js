@@ -8,8 +8,12 @@ const content = `
 <link rel="stylesheet" href="/pages/home.css">
 <h3>Welcome!</h3>
 <button class="confirm-button">Start Workout</button>
-<section id="chooseWorkout" hidden>
-</section>
+<dialog>
+    <h2>Choose a workout</h2>
+    <section id="chooseWorkout">
+    </section>
+    <button id="closeDialog" class="cancel-button">Close</button>
+</dialog>
 <section id="currentWorkout" hidden>
     <div class="header">
         <h3></h3>
@@ -70,13 +74,20 @@ export function init(element) {
     const chooseWorkoutList = element.querySelector('#chooseWorkout');
     const currentWorkoutSection = element.querySelector('#currentWorkout');
 
+    const dialog = element.querySelector('dialog');
+
+    const closeDialog = element.querySelector('#closeDialog');
+    closeDialog.addEventListener('click', () => {
+        dialog.close();
+    });
+
     currentWorkout.onChange((workout) => {
         if (!workout) { // clean up all the state from the previous workout if it is changed to null (meaning a workout has ended)
             cleanupManager.clean();        
         }
 
         // default element visibility depending on the workout state
-        chooseWorkoutList.hidden = true;
+        dialog.close();
         currentWorkoutSection.hidden = workout === null;
         startWorkoutButton.hidden = workout !== null;
         title.hidden = workout !== null;
@@ -159,7 +170,11 @@ export function init(element) {
     });
 
     startWorkoutButton.addEventListener('click', () => {
-        chooseWorkoutList.hidden = !chooseWorkoutList.hidden;
+        if (dialog.hasAttribute('open')) {
+            dialog.close();
+        } else {
+            dialog.showModal();
+        }
     });
 
     pauseWorkoutButton.addEventListener('click', () => {

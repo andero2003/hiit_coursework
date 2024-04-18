@@ -20,14 +20,22 @@ class WorkoutElement extends HTMLElement {
             await deleteWorkout(this.getAttribute('workoutId'));
         });
 
-        let displayAddList = false;
         const addActivityButton = this.shadowRoot.querySelector('#addActivityToWorkout');
         const addActivityList = this.shadowRoot.querySelector('#addActivityList');
 
-        addActivityButton.addEventListener('click', () => {
-            displayAddList = !displayAddList;
+        const dialog = this.shadowRoot.querySelector('dialog');
 
-            addActivityList.style.display = displayAddList ? 'block' : 'none';
+        const closeAddActivityList = this.shadowRoot.querySelector('#closeDialog');
+        closeAddActivityList.addEventListener('click', () => {
+            dialog.close();
+        });
+
+        addActivityButton.addEventListener('click', () => {
+            if (dialog.hasAttribute('open')) {
+                dialog.close();
+            } else {
+                dialog.showModal();
+            }
         });
 
         ReactiveContainer(StateManager.activities, addActivityList, (activity) => {
@@ -35,9 +43,8 @@ class WorkoutElement extends HTMLElement {
             activityItem.setAttribute('activityId', activity.id);
             activityItem.textContent = activity.name;
             activityItem.addEventListener('click', async () => {
-                addActivityList.style.display = 'none';
-                displayAddList = false;
-
+                dialog.close();
+                
                 try {
                     const status = await addActivityToWorkout(this.getAttribute('workoutId'), activity.id);
                 } catch (e) {

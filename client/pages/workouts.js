@@ -5,12 +5,18 @@ const content = `
 <link rel="stylesheet" href="/styles/global.css">
 <link rel="stylesheet" href="/pages/workouts.css">
 <div class="form-header">
-<button id="addWorkout">Add Workout</button>
-<form autocomplete="off" hidden>
-    <input type="text" id="workoutName" placeholder="Workout name">
-    <input type="text" id="workoutDescription" placeholder="Workout description">
-    <button id="submitWorkout" class="confirm-button">Create</button>
-</form>
+    <button id="addWorkout">Add Workout</button>
+    <dialog>
+        <h2>Create a new workout</h2>
+        <form autocomplete="off" hidden>
+            <input type="text" id="workoutName" placeholder="Workout name">
+            <input type="text" id="workoutDescription" placeholder="Workout description">
+            <div class="rowButtons">
+                <button id="submitWorkout" class="confirm-button">Create</button>
+                <button id="cancelWorkout" class="cancel-button">Cancel</button>
+            </div>
+        </form>
+    </dialog>
 </div>
 <div class="grid-container">
 
@@ -40,10 +46,21 @@ export function init(element) {
         return child.getAttribute('workoutId') === workout.id;
     });
 
+    const dialog = element.querySelector('dialog');
     const addWorkoutButton = element.querySelector('#addWorkout');
     const workoutForm = element.querySelector('form');
     addWorkoutButton.addEventListener('click', () => {
-        workoutForm.hidden = !workoutForm.hidden;
+        if (dialog.hasAttribute('open')) {
+            dialog.close();
+        } else {
+            dialog.showModal();
+        }
+    });
+
+    const cancelWorkout = element.querySelector('#cancelWorkout');
+    cancelWorkout.addEventListener('click', (e) => {
+        e.preventDefault();
+        dialog.close();
     });
 
     const submitWorkout = element.querySelector('#submitWorkout');
@@ -55,7 +72,7 @@ export function init(element) {
         if (!description) return;
 
         await createNewWorkout(name, description);
-        workoutForm.hidden = true;
         workoutForm.reset(); // clear the form
+        dialog.close();
     });
 }

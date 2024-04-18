@@ -5,20 +5,21 @@ const content = `
 <link rel="stylesheet" href="/styles/global.css">
 <link rel="stylesheet" href="/pages/activities.css">
 <div class="form-header">
-<button id="addActivity">Add Activity</button>
-<dialog>
-    <form autocomplete="off">
-        <input type="text" id="activityName" placeholder="Activity name">
-        <input type="text" id="activityDescription" placeholder="Activity description">
-        <div>
+    <button id="addActivity">Add Activity</button>
+    <dialog>
+        <h2>Create a new activity</h2>
+        <form autocomplete="off">
+            <input type="text" id="activityName" placeholder="Activity name">
+            <input type="text" id="activityDescription" placeholder="Activity description">
+            <input type="text" id="activityImageUrl" placeholder="Image URL">
             <input type="range" id="activityDuration" value="30" min="5" max="90" step="1" name="duration">
             <label for="duration">Duration: <span id="durationValue">30</span> seconds</label>
-        </div>
-        <input type="text" id="activityImageUrl" placeholder="Image URL">
-        <button id="submitActivity" class="confirm-button">Create</button>
-        <button id="cancelActivity" class="cancel-button">Cancel</button>
-    </form>
-</dialog>
+            <div class="rowButtons">
+                <button id="submitActivity" class="confirm-button">Create</button>
+                <button id="cancelActivity" class="cancel-button">Cancel</button>
+            </div>
+        </form>
+    </dialog>
 </div>
 <div class="grid-container">
 
@@ -73,7 +74,7 @@ export function init(element) {
         e.preventDefault();
         dialog.close();
     });
-
+    
     const submitActivity = element.querySelector('#submitActivity');
     submitActivity.addEventListener('click', async (e) => {
         e.preventDefault(); // since the button is inside a form, we need to prevent the default form submission (page reload)
@@ -89,5 +90,6 @@ export function init(element) {
 
         await createNewActivity(name, description, duration, imageUrl);
         createActivityForm.reset(); // clear the form
+        dialog.close();
     });
 }

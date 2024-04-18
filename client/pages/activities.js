@@ -6,16 +6,19 @@ const content = `
 <link rel="stylesheet" href="/pages/activities.css">
 <div class="form-header">
 <button id="addActivity">Add Activity</button>
-<form autocomplete="off" hidden>
-    <input type="text" id="activityName" placeholder="Activity name">
-    <input type="text" id="activityDescription" placeholder="Activity description">
-    <div>
-        <input type="range" id="activityDuration" value="30" min="5" max="90" step="1" name="duration">
-        <label for="duration">Duration: <span id="durationValue">30</span> seconds</label>
-    </div>
-    <input type="text" id="activityImageUrl" placeholder="Image URL">
-    <button id="submitActivity" class="confirm-button">Create</button>
-</form>
+<dialog>
+    <form autocomplete="off">
+        <input type="text" id="activityName" placeholder="Activity name">
+        <input type="text" id="activityDescription" placeholder="Activity description">
+        <div>
+            <input type="range" id="activityDuration" value="30" min="5" max="90" step="1" name="duration">
+            <label for="duration">Duration: <span id="durationValue">30</span> seconds</label>
+        </div>
+        <input type="text" id="activityImageUrl" placeholder="Image URL">
+        <button id="submitActivity" class="confirm-button">Create</button>
+        <button id="cancelActivity" class="cancel-button">Cancel</button>
+    </form>
+</dialog>
 </div>
 <div class="grid-container">
 
@@ -48,15 +51,27 @@ export function init(element) {
     });
 
     const addActivityButton = element.querySelector('#addActivity');
+
+    const dialog = element.querySelector('dialog');
     const createActivityForm = element.querySelector('form');
     addActivityButton.addEventListener('click', () => {
-        createActivityForm.hidden = !createActivityForm.hidden;
+        if (dialog.hasAttribute('open')) {
+            dialog.close();
+        } else {
+            dialog.showModal();
+        }
     });
 
     const durationSlider = createActivityForm.querySelector('#activityDuration');
     const durationOutput = createActivityForm.querySelector('#durationValue');
     durationSlider.addEventListener('input', () => {
         durationOutput.textContent = durationSlider.value;
+    });
+
+    const cancelActivity = element.querySelector('#cancelActivity');
+    cancelActivity.addEventListener('click', (e) => {
+        e.preventDefault();
+        dialog.close();
     });
 
     const submitActivity = element.querySelector('#submitActivity');
@@ -73,7 +88,6 @@ export function init(element) {
         if (!imageUrl) imageUrl = 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif';
 
         await createNewActivity(name, description, duration, imageUrl);
-        createActivityForm.hidden = true;
         createActivityForm.reset(); // clear the form
     });
 }

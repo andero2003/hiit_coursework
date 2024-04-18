@@ -119,3 +119,13 @@ async function fetchData() {
 }
 
 fetchData();
+
+const modal = document.createElement('dialog');
+modal.innerHTML = `
+    <h1>Welcome to the Fitness App!</h1>
+    <p>Click on the sidebar to navigate to different pages.</p>
+    <p>Swipe from the left edge to open the sidebar on mobile.</p>
+    <button>Close</button>
+`;
+document.body.append(modal);
+//modal.showModal();

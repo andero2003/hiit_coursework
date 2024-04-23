@@ -32,7 +32,7 @@ function updateWorkoutElement(element, workout) {
     const duration = workout.activities.reduce((acc, activity) => acc + activity.activity.duration, 0);
     element.setAttribute('duration', duration);
 
-    const imageUrl = workout.activities[0]?.activity.imageUrl;
+    const imageUrl = workout.activities[0]?.activity.imageUrl ?? 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif';
     if (imageUrl) {
         element.setAttribute('imageUrl', imageUrl);
     }

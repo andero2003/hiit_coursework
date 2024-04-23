@@ -17,6 +17,10 @@ dialog>form>input {
     margin: 10px;
 }
 
+dialog {
+    width: 360px;
+}
+
 .rowButtons {
     margin-top: 10px;
     display: flex;

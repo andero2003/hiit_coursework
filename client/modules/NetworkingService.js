@@ -41,7 +41,7 @@ export async function getWorkouts() {
     });
 }
 
-export async function updateImage(activityId, imageUrl) {
+export async function updateActivityData(activityId, newActivity) {
     const status = await fetch(
         `/activity/${activityId}`,
         {
@@ -50,7 +50,10 @@ export async function updateImage(activityId, imageUrl) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                imageUrl: imageUrl,
+                name: newActivity.name,
+                description: newActivity.description,
+                duration: newActivity.duration,
+                imageUrl: newActivity.imageUrl,
             }),
         },
     );
@@ -58,7 +61,10 @@ export async function updateImage(activityId, imageUrl) {
     // Reconcile state
     StateManager.activities.value = StateManager.activities.value.map((activity) => {
         if (activity.id === activityId) {
-            activity.imageUrl = imageUrl;
+            activity.name = newActivity.name;
+            activity.description = newActivity.description;
+            activity.duration = newActivity.duration;
+            activity.imageUrl = newActivity.imageUrl;
         }
         return activity;
     });

@@ -1,5 +1,3 @@
-import { deleteActivity, updateImage } from "../modules/NetworkingService.js";
-import { StateManager } from "../modules/StateLib.js";
 import { formatDuration } from "../modules/Utils.js";
 
 class CardElement extends HTMLElement {

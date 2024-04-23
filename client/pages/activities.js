@@ -1,4 +1,4 @@
-import { createNewActivity } from "../modules/NetworkingService.js";
+import { createNewActivity, deleteActivity, updateActivityData } from "../modules/NetworkingService.js";
 import { CompoundState, ReactiveContainer, StateManager } from "../modules/StateLib.js";
 import { createIconButton } from "../modules/Utils.js";
 
@@ -27,7 +27,9 @@ const content = `
 </div>
 `
 
-function updateActivityElement(element, activity) {
+let editingActivityId = null;
+
+function updateActivityElement(element, activity, dialog) {
     element.setAttribute('name', activity.name);
     element.setAttribute('activityId', activity.id);
     element.setAttribute('description', activity.description);
@@ -35,12 +37,21 @@ function updateActivityElement(element, activity) {
     element.setAttribute('imageUrl', activity.imageUrl);
 
     const editButton = createIconButton('./assets/Pencil 64.png', (e) => {
-        console.log('editing activity');
+        const form = dialog.querySelector('form');
+        form.querySelector('#activityName').value = activity.name;
+        form.querySelector('#activityDescription').value = activity.description;
+        form.querySelector('#activityImageUrl').value = activity.imageUrl;
+        form.querySelector('#activityDuration').value = activity.duration;
+        form.querySelector('#durationValue').textContent = activity.duration;
+
+        editingActivityId = activity.id;
+        dialog.querySelector('h2').textContent = 'Edit activity';
+        dialog.showModal();
     });
     element.addButtonToContextMenu(editButton);
 
-    const deleteButton = createIconButton('./assets/Trash 64.png', (e) => {
-        console.log('deleting activity');
+    const deleteButton = createIconButton('./assets/Trash 64.png', async (e) => {
+        await deleteActivity(activity.id);
     }, 'cancel-button');
     element.addButtonToContextMenu(deleteButton);
 }
@@ -50,11 +61,12 @@ export function init(element) {
 
     const grid = element.querySelector('.grid-container');
     const activities = StateManager.activities;
+    const dialog = element.querySelector('dialog');
 
     // this will populate the grid with activities and update dynamically when the activities list changes
     ReactiveContainer(activities, grid, (activity) => {
         const activityElement = document.createElement('card-element');
-        updateActivityElement(activityElement, activity);
+        updateActivityElement(activityElement, activity, dialog);
         return activityElement;
     }, (child, activity) => {
         return child.getAttribute('activityId') === activity.id;
@@ -62,14 +74,11 @@ export function init(element) {
 
     const addActivityButton = element.querySelector('#addActivity');
 
-    const dialog = element.querySelector('dialog');
     const createActivityForm = element.querySelector('form');
     addActivityButton.addEventListener('click', () => {
-        if (dialog.hasAttribute('open')) {
-            dialog.close();
-        } else {
-            dialog.showModal();
-        }
+        editingActivityId = null;
+        dialog.querySelector('h2').textContent = 'Create a new activity';
+        dialog.showModal();
     });
 
     const durationSlider = createActivityForm.querySelector('#activityDuration');
@@ -83,7 +92,7 @@ export function init(element) {
         e.preventDefault();
         dialog.close();
     });
-    
+
     const submitActivity = element.querySelector('#submitActivity');
     submitActivity.addEventListener('click', async (e) => {
         e.preventDefault(); // since the button is inside a form, we need to prevent the default form submission (page reload)
@@ -97,7 +106,18 @@ export function init(element) {
         let imageUrl = createActivityForm.querySelector('#activityImageUrl').value;
         if (!imageUrl) imageUrl = 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif';
 
-        await createNewActivity(name, description, duration, imageUrl);
+        if (editingActivityId) {
+            console.log('updating existing activity');
+            await updateActivityData(editingActivityId, {
+                name: name,
+                description: description,
+                duration: duration,
+                imageUrl: imageUrl,
+            });
+        } else {
+            console.log('creating new activity');
+            await createNewActivity(name, description, duration, imageUrl);
+        }
         createActivityForm.reset(); // clear the form
         dialog.close();
     });

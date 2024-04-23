@@ -101,9 +101,9 @@ export async function createActivity(name, description, duration, imageUrl) {
     };
 }
 
-export async function updateActivity(id, { imageUrl }) {
+export async function updateActivity(id, { name, description, duration, imageUrl }) {
     const db = await dbConn;
-    await db.run(`UPDATE activity SET imageUrl = ? WHERE id = ?;`, [imageUrl, id]);
+    await db.run(`UPDATE activity SET name = ?, description = ?, duration = ?, imageUrl = ? WHERE id = ?;`, [name, description, duration, imageUrl, id]);
     return 'Success';
 }
 

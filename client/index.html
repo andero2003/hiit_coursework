@@ -21,85 +21,26 @@
         </section>
     </template>
     <script src="components/Page.js"></script>
-    <template id="activity-list-element-template">
-        <link rel="stylesheet" href="components/ActivityListElement.css" />
+    <template id="card-template">
+        <link rel="stylesheet" href="components/CardElement.css" />
         <link rel="stylesheet" href="./styles/global.css">
         <div class="card">
-            <img id="activityImage"
-                src="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a258b2108677535.5fc364926e4a7.gif"
-                height="128px" alt="Activity" />
-            <div>
-                <h3>Title</h3>
-                <div id="timer">
-                    <img width="32px" src="./assets/Clock 64.png" alt="Duration" />
-                    <p>Duration</p>
+            <div class="cardImage">
+                <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a258b2108677535.5fc364926e4a7.gif"
+                    class="activityIcon"
+                    width="100%" alt="Activity" />
+                <div class="contextMenu">
+
                 </div>
             </div>
-            <button id="removeActivityFromWorkout" class="cancel-button">
-                <img width="24px" src="./assets/Trash 64.png" alt="Delete" />
-            </button>
-        </div>
-    </template>
-    <script type="module" src="components/ActivityListElement.js"></script>
-    <template id="activity-template">
-        <link rel="stylesheet" href="components/ActivityElement.css" />
-        <link rel="stylesheet" href="./styles/global.css">
-        <div class="activity card">
             <header>
                 <h3 id="name"></h3>
                 <h4 id="duration"></h4>
-                <button id="deleteActivity" class="cancel-button">
-                    <img width="32px" src="./assets/Trash 64.png" alt="Delete" />
-                </button>
             </header>
             <p id="description"></p>
-            <div id="activityImage">
-                <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a258b2108677535.5fc364926e4a7.gif"
-                    width="100%" alt="Activity" />
-                <div>
-                    <button id="editImage">
-                        <img width="24px" src="./assets/Pencil 64.png" alt="Edit image" />
-                    </button>
-                    <input type="text" placeholder="Enter image URL..." hidden />
-                    <button id="confirmEdit" class="confirm-button" hidden>
-                        OK
-                    </button>
-                </div>
-            </div>
         </div>
     </template>
-    <script type="module" src="components/ActivityElement.js"></script>
-    <template id="workout-template">
-        <link rel="stylesheet" href="components/WorkoutElement.css" />
-        <link rel="stylesheet" href="./styles/global.css">
-        <div class="card">
-            <header>
-                <h2></h2>
-                <div>
-                    <button id="deleteWorkout" class="cancel-button">
-                        <img width="32px" src="./assets/Trash 64.png" alt="Delete" />
-                    </button>
-                </div>
-            </header>
-            <div class="duration">
-                <img src="./assets/Clock 64.png" width="32px" alt="Duration" />
-                <h3>Duration</h3>
-            </div>
-            <p></p>
-            <div id="activitiesList">
-
-            </div>
-            <button id="addActivityToWorkout">Add activity</button>
-            <dialog>
-                <h2>Choose activity to add</h2>
-                <div id="addActivityList">
-
-                </div>
-                <button id="closeDialog" class="cancel-button">Close</button>
-            </dialog>
-        </div>
-    </template>
-    <script type="module" src="components/WorkoutElement.js"></script>
+    <script type="module" src="components/CardElement.js"></script>
     <script type="module" defer src="index.js"></script>
 
     <nav id="sidebar">

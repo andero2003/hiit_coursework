@@ -16,7 +16,7 @@
     padding: 12px 12px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 900px) {
     #sidebar {
         width: 16%;
         padding: 12px 12px;

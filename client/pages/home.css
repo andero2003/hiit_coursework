@@ -21,6 +21,7 @@ button {
 }
 
 #currentActivity {
+    width: 100%;
     margin: 8px;
 }
 

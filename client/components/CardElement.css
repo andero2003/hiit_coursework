@@ -1,0 +1,44 @@
+* {
+    font-family: 'Gill Sans', sans-serif;
+}
+
+header {
+    display: flex;
+    justify-content: start;
+}
+
+h3 {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+p {
+    margin-left: 10px;
+    padding-bottom: 16px;
+    margin-top: 0;
+
+    height: 100px;
+    display: block;/* or inline-block */
+    overflow: hidden;
+}
+
+.cardImage {
+    position: relative;
+}
+
+.contextMenu {
+    position: absolute;
+    display: block;
+    top: 7px;
+    right: 7px;
+}
+
+.contextMenu>button {
+    margin: 4px;
+    display: block;
+}
+
+.activityIcon {
+    height: 180px;
+    object-fit: cover;
+}

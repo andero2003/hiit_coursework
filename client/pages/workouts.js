@@ -1,5 +1,6 @@
-import { createNewWorkout } from "../modules/NetworkingService.js";
+import { createNewWorkout, deleteWorkout } from "../modules/NetworkingService.js";
 import { StateManager, ReactiveContainer } from "../modules/StateLib.js";
+import { createIconButton } from "../modules/Utils.js";
 
 const content = `
 <link rel="stylesheet" href="/styles/global.css">
@@ -24,11 +25,22 @@ const content = `
 `
 
 function updateWorkoutElement(element, workout) {
-    element.setAttribute('workoutId', workout.id);
     element.setAttribute('name', workout.name);
+    element.setAttribute('workoutId', workout.id);
     element.setAttribute('description', workout.description);
 
-    element.addActivities(workout.activities);
+    const duration = workout.activities.reduce((acc, activity) => acc + activity.activity.duration, 0);
+    element.setAttribute('duration', duration);
+
+    const imageUrl = workout.activities[0]?.activity.imageUrl;
+    if (imageUrl) {
+        element.setAttribute('imageUrl', imageUrl);
+    }
+
+    const deleteButton = createIconButton('./assets/Trash 64.png', async (e) => {
+        await deleteWorkout(workout.id);
+    }, 'cancel-button');
+    element.addButtonToContextMenu(deleteButton);
 }
 
 export function init(element) {
@@ -39,7 +51,7 @@ export function init(element) {
 
     // this will populate the grid with workouts and update dynamically when the workouts list changes
     ReactiveContainer(workouts, grid, (workout) => {
-        const workoutElement = document.createElement('workout-element');
+        const workoutElement = document.createElement('card-element');
         updateWorkoutElement(workoutElement, workout);
         return workoutElement;
     }, (child, workout) => {

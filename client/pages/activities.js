@@ -1,5 +1,6 @@
 import { createNewActivity } from "../modules/NetworkingService.js";
 import { CompoundState, ReactiveContainer, StateManager } from "../modules/StateLib.js";
+import { createIconButton } from "../modules/Utils.js";
 
 const content = `
 <link rel="stylesheet" href="/styles/global.css">
@@ -27,13 +28,21 @@ const content = `
 `
 
 function updateActivityElement(element, activity) {
-    element.setAttribute('activityId', activity.id);
     element.setAttribute('name', activity.name);
+    element.setAttribute('activityId', activity.id);
     element.setAttribute('description', activity.description);
     element.setAttribute('duration', activity.duration);
     element.setAttribute('imageUrl', activity.imageUrl);
 
-    element.updateImage();
+    const editButton = createIconButton('./assets/Pencil 64.png', (e) => {
+        console.log('editing activity');
+    });
+    element.addButtonToContextMenu(editButton);
+
+    const deleteButton = createIconButton('./assets/Trash 64.png', (e) => {
+        console.log('deleting activity');
+    }, 'cancel-button');
+    element.addButtonToContextMenu(deleteButton);
 }
 
 export function init(element) {
@@ -44,7 +53,7 @@ export function init(element) {
 
     // this will populate the grid with activities and update dynamically when the activities list changes
     ReactiveContainer(activities, grid, (activity) => {
-        const activityElement = document.createElement('activity-element');
+        const activityElement = document.createElement('card-element');
         updateActivityElement(activityElement, activity);
         return activityElement;
     }, (child, activity) => {

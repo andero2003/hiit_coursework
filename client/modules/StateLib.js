@@ -178,7 +178,7 @@ export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
 
 // single source of truth for the entire application state
 export const StateManager = {
-    currentPage: new State('home'),
+    currentPage: new State('workouts'),
     sidebarOpen: new State(false),
     workouts: new State([]),
     activities: new State([]),

@@ -23,8 +23,9 @@ const content = `
 
 </div>
 `
+let editingWorkoutId = null;
 
-function updateWorkoutElement(element, workout) {
+function updateWorkoutElement(element, workout, dialog) {
     element.setAttribute('name', workout.name);
     element.setAttribute('workoutId', workout.id);
     element.setAttribute('description', workout.description);
@@ -36,6 +37,13 @@ function updateWorkoutElement(element, workout) {
     if (imageUrl) {
         element.setAttribute('imageUrl', imageUrl);
     }
+
+    const editButton = createIconButton('./assets/Pencil 64.png', (e) => {
+        editingWorkoutId = workout.id;
+        dialog.querySelector('h2').textContent = 'Edit workout';
+        dialog.showModal();
+    });
+    element.addButtonToContextMenu(editButton);
 
     const deleteButton = createIconButton('./assets/Trash 64.png', async (e) => {
         await deleteWorkout(workout.id);
@@ -49,24 +57,23 @@ export function init(element) {
     const grid = element.querySelector('.grid-container');
     const workouts = StateManager.workouts;
 
+    const dialog = element.querySelector('dialog');
+
     // this will populate the grid with workouts and update dynamically when the workouts list changes
     ReactiveContainer(workouts, grid, (workout) => {
         const workoutElement = document.createElement('card-element');
-        updateWorkoutElement(workoutElement, workout);
+        updateWorkoutElement(workoutElement, workout, dialog);
         return workoutElement;
     }, (child, workout) => {
         return child.getAttribute('workoutId') === workout.id;
     });
 
-    const dialog = element.querySelector('dialog');
     const addWorkoutButton = element.querySelector('#addWorkout');
     const workoutForm = element.querySelector('form');
     addWorkoutButton.addEventListener('click', () => {
-        if (dialog.hasAttribute('open')) {
-            dialog.close();
-        } else {
-            dialog.showModal();
-        }
+        editingWorkoutId = null;
+        dialog.querySelector('h2').textContent = 'Create a new workout';
+        dialog.showModal();
     });
 
     const cancelWorkout = element.querySelector('#cancelWorkout');

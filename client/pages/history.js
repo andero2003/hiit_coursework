@@ -19,7 +19,7 @@ export function init(element) {
     ReactiveContainer(history, grid, (entry) => {
         const entryElement = document.createElement('div')
         entryElement.classList.add('card')
-        
+
         const workout = workouts.value.find((workout) => workout.id === entry.workoutId);
         entryElement.innerHTML = `
             <div class="entry-header">

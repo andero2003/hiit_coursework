@@ -1,4 +1,4 @@
-dialog>form {
+dialog form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -7,11 +7,20 @@ dialog>form {
     height: 100%;
 }
 
-dialog>form>input {
+dialog form>input {
     margin-top: 10px;
     margin-bottom: 10px;
     width: 90%;
 }
+
+.besides {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+
 
 #addWorkout {
     margin: 10px;

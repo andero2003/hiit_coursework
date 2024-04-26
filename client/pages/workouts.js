@@ -1,5 +1,5 @@
-import { createNewWorkout, deleteWorkout } from "../modules/NetworkingService.js";
-import { StateManager, ReactiveContainer } from "../modules/StateLib.js";
+import { createNewWorkout, deleteWorkout, removeActivityFromWorkout } from "../modules/NetworkingService.js";
+import { StateManager, ReactiveContainer, State, CompoundState } from "../modules/StateLib.js";
 import { createIconButton } from "../modules/Utils.js";
 
 const content = `
@@ -9,21 +9,37 @@ const content = `
     <button id="addWorkout">Add Workout</button>
     <dialog>
         <h2>Create a new workout</h2>
-        <form autocomplete="off" hidden>
-            <input type="text" id="workoutName" placeholder="Workout name">
-            <input type="text" id="workoutDescription" placeholder="Workout description">
-            <div class="rowButtons">
-                <button id="submitWorkout" class="confirm-button">Create</button>
-                <button id="cancelWorkout" class="cancel-button">Cancel</button>
+        <div class="besides">
+            <form autocomplete="off" hidden>
+                <input type="text" id="workoutName" placeholder="Workout name">
+                <input type="text" id="workoutDescription" placeholder="Workout description">
+                <div class="rowButtons">
+                    <button id="submitWorkout" class="confirm-button">Create</button>
+                    <button id="cancelWorkout" class="cancel-button">Cancel</button>
+                </div>
+            </form>
+            <div class="activitiesList">
+
             </div>
-        </form>
+        </div>
     </dialog>
 </div>
 <div class="grid-container">
 
 </div>
 `
-let editingWorkoutId = null;
+const editingWorkoutId = new State(null);
+
+const currentWorkoutActivities = new CompoundState((use) => {
+    const activities = use(StateManager.activities);
+    const currentWorkout = use(StateManager.workouts).find(workout => workout.id === use(editingWorkoutId));
+
+    // if there is no current workout, return an empty array to avoid errors
+    return currentWorkout?.activities.map(({activity, identifier}) => ({
+        activity: activities.find(a => a.id === activity.id), 
+        identifier
+    })) ?? [];
+});
 
 function updateWorkoutElement(element, workout, dialog) {
     element.setAttribute('name', workout.name);
@@ -39,7 +55,7 @@ function updateWorkoutElement(element, workout, dialog) {
     }
 
     const editButton = createIconButton('./assets/Pencil 64.png', (e) => {
-        editingWorkoutId = workout.id;
+        editingWorkoutId.value = workout.id;
         dialog.querySelector('h2').textContent = 'Edit workout';
         dialog.showModal();
     });
@@ -68,16 +84,34 @@ export function init(element) {
         return child.getAttribute('workoutId') === workout.id;
     });
 
+    const activitiesList = dialog.querySelector('.activitiesList');
+    ReactiveContainer(currentWorkoutActivities, activitiesList, ({activity, identifier}) => {
+        const activityItem = document.createElement('button');
+        activityItem.setAttribute('identifier', identifier);
+        activityItem.textContent = activity.name;
+        activityItem.addEventListener('click', async () => {
+            try {
+                const status = await removeActivityFromWorkout(editingWorkoutId.value, identifier);
+            } catch (e) {
+                console.log(e);
+            }
+        });
+        return activityItem;
+    }, (child, {activity, identifier}) => {
+        return child.getAttribute('identifier') === identifier;
+    });
+
     const addWorkoutButton = element.querySelector('#addWorkout');
     const workoutForm = element.querySelector('form');
     addWorkoutButton.addEventListener('click', () => {
-        editingWorkoutId = null;
+        editingWorkoutId.value = null;
         dialog.querySelector('h2').textContent = 'Create a new workout';
         dialog.showModal();
     });
 
     const cancelWorkout = element.querySelector('#cancelWorkout');
     cancelWorkout.addEventListener('click', (e) => {
+        editingWorkoutId.value = null;
         e.preventDefault();
         dialog.close();
     });

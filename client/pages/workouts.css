@@ -13,14 +13,25 @@ dialog form>input {
     width: 90%;
 }
 
-.besides {
+/* .besides {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
+} */
+
+.addActivitiesList>button {
+    display: block;
 }
 
+.activityItem {
+    display: block;
+    width: 200px
+}
 
+button {
+    margin-bottom: 8px;
+}
 
 #addWorkout {
     margin: 10px;

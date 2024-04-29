@@ -144,6 +144,7 @@ export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
         const newState = JSON.parse(JSON.stringify(newArray));
         // Add or update elements
         newArray.forEach((arrayElement) => {
+            console.log(arrayElement);
             const oldElement = oldState.find(item => item.id === arrayElement.id);
             if (!oldElement) {
                 const element = builder(arrayElement);

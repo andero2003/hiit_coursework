@@ -151,10 +151,8 @@ export function init(element) {
         progressElement.value = 100 - progress * 100;
     });
 
-    const workouts = StateManager.workouts;
-
     // this will populate the list of workouts to choose from on home page, updating dynamically whenever the workouts list changes
-    ReactiveContainer(workouts, chooseWorkoutList, (workout) => {
+    ReactiveContainer(StateManager.workoutsState, chooseWorkoutList, (workout) => {
         const workoutElement = document.createElement('button');
         workoutElement.setAttribute('workoutId', workout.id);
         workoutElement.textContent = workout.name;

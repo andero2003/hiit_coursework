@@ -1,5 +1,5 @@
 import { deleteHistoryEntry } from "../modules/NetworkingService.js";
-import { ReactiveContainer, StateManager } from "../modules/StateLib.js";
+import { CompoundState, ReactiveContainer, StateManager } from "../modules/StateLib.js";
 
 const content = `
 <link rel="stylesheet" href="/styles/global.css">
@@ -13,14 +13,26 @@ export function init(element) {
     element.innerHTML = content;
 
     const grid = element.querySelector('.grid-container');
-    const history = StateManager.history;
-    const workouts = StateManager.workouts;
 
-    ReactiveContainer(history, grid, (entry) => {
+    // Compound state that uses both the history and workouts state to add reactivity
+    // for when for example the workout name is updated, all history entries are updated as well
+    const historyState = new CompoundState((use) => {
+        const history = use(StateManager.history);
+        const workouts = use(StateManager.workouts);
+
+        return history.map((entry) => {
+            return {
+                ...entry,
+                workout: workouts.find((workout) => workout.id === entry.workoutId)
+            }
+        });
+    });
+
+    ReactiveContainer(historyState, grid, (entry) => {
         const entryElement = document.createElement('div')
         entryElement.classList.add('card')
 
-        const workout = workouts.value.find((workout) => workout.id === entry.workoutId);
+        const workout = entry.workout;
         entryElement.innerHTML = `
             <div class="entry-header">
                 <h3>${workout.name}</h3>

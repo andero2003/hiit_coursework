@@ -107,7 +107,6 @@ export function init(element) {
         if (!imageUrl) imageUrl = 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif';
 
         if (editingActivityId) {
-            console.log('updating existing activity');
             await updateActivityData(editingActivityId, {
                 name: name,
                 description: description,

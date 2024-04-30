@@ -16,3 +16,7 @@ h3 {
 .grid-container {
     gap: 10px;
 }
+
+.grid-container>* {
+    padding: 8px;
+}

@@ -144,7 +144,6 @@ export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
         const newState = JSON.parse(JSON.stringify(newArray));
         // Add or update elements
         newArray.forEach((arrayElement) => {
-            console.log(arrayElement);
             const oldElement = oldState.find(item => item.id === arrayElement.id);
             if (!oldElement) {
                 const element = builder(arrayElement);
@@ -177,11 +176,27 @@ export function ReactiveContainer(arrayState, grid, builder, queryPredicate) {
     return arrayState.onChange(update);
 }
 
+const workouts = new State([]);
+const activities = new State([]);
+
 // single source of truth for the entire application state
 export const StateManager = {
     currentPage: new State('workouts'),
     sidebarOpen: new State(false),
-    workouts: new State([]),
-    activities: new State([]),
+    workouts: workouts,
+    activities: activities,
+    workoutsState: new CompoundState((use) => {
+        return use(workouts).map((workout) => {
+            return {
+                ...workout,
+                activities: workout.activities.map((activity) => {
+                    return {
+                        activity: use(activities).find((a) => a.id === activity.activityId),
+                        identifier: activity.identifier
+                    }
+                })
+            }
+        });
+    }),
     history: new State([])
 }

@@ -54,6 +54,11 @@ workoutRouter.get('/:id', async (req, res) => {
     res.json(workoutData);
 });
 
+// Update workout
+workoutRouter.patch('/:id', express.json(), async (req, res) => {
+    res.json(await database.updateWorkout(req.params.id, req.body));
+});
+
 // Create new workout
 workoutRouter.post('/', express.json(), async (req, res) => {
     const status = await database.createWorkout(req.body.name, req.body.description);

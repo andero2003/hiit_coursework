@@ -21,6 +21,10 @@ header h1 {
     color: white;
 }
 
+input {
+    font-size: large;
+}
+
 h3 {
     padding: 10px;
 }
@@ -31,8 +35,12 @@ div.grid-container {
     grid-auto-rows: 1fr; 
 }
 
-card-element,
-workout-element {
+button {
+    margin-bottom: 8px;
+    font-size: x-large;
+}
+
+.grid-container>* {
     margin: 10px;
 }
 

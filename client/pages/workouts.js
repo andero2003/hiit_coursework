@@ -1,4 +1,4 @@
-import { addActivityToWorkout, createNewWorkout, deleteWorkout, removeActivityFromWorkout } from "../modules/NetworkingService.js";
+import { addActivityToWorkout, createNewWorkout, deleteWorkout, removeActivityFromWorkout, updateWorkoutData } from "../modules/NetworkingService.js";
 import { StateManager, ReactiveContainer, State, CompoundState } from "../modules/StateLib.js";
 import { createIconButton } from "../modules/Utils.js";
 
@@ -20,10 +20,10 @@ const content = `
                     </div>
                 </form>
                 <div>
-                    <button id="addActivity" class="confirm-button activityItem">Add activity</button>
                     <div class="activitiesList">
 
                     </div>
+                    <button id="addActivity" class="confirm-button">Add activity</button>
                 </div>
             </div>
         </div>
@@ -45,12 +45,12 @@ const selectingActivity = new State(false);
 
 const currentWorkoutActivities = new CompoundState((use) => {
     const activities = use(StateManager.activities);
-    const currentWorkout = use(StateManager.workouts).find(workout => workout.id === use(editingWorkoutId));
+    const currentWorkout = use(StateManager.workoutsState).find(workout => workout.id === use(editingWorkoutId));
 
     // if there is no current workout, return an empty array to avoid errors
     return currentWorkout?.activities.map(({activity, identifier}) => ({
         activity: activities.find(a => a.id === activity.id), 
-        id: identifier, // for ReactiveContainer to distinguish between activities
+        id: identifier, // ReactiveContainer uses the id property to determine if an element has changed
         identifier
     })) ?? [];
 });
@@ -60,7 +60,7 @@ function updateWorkoutElement(element, workout, dialog) {
     element.setAttribute('workoutId', workout.id);
     element.setAttribute('description', workout.description);
 
-    const duration = workout.activities.reduce((acc, activity) => acc + activity.activity.duration, 0);
+    const duration = workout.activities.reduce((acc, activity) => acc + (activity.activity?.duration ?? 0), 0);
     element.setAttribute('duration', duration);
 
     const imageUrl = workout.activities[0]?.activity.imageUrl ?? 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif';
@@ -71,6 +71,8 @@ function updateWorkoutElement(element, workout, dialog) {
     const editButton = createIconButton('./assets/Pencil 64.png', (e) => {
         editingWorkoutId.value = workout.id;
         dialog.querySelector('h2').textContent = 'Edit workout';
+        dialog.querySelector('#workoutName').value = workout.name;
+        dialog.querySelector('#workoutDescription').value = workout.description;
         dialog.showModal();
     });
     element.addButtonToContextMenu(editButton);
@@ -85,12 +87,10 @@ export function init(element) {
     element.innerHTML = content;
 
     const grid = element.querySelector('.grid-container');
-    const workouts = StateManager.workouts;
-
     const dialog = element.querySelector('dialog');
 
     // this will populate the grid with workouts and update dynamically when the workouts list changes
-    ReactiveContainer(workouts, grid, (workout) => {
+    ReactiveContainer(StateManager.workoutsState, grid, (workout) => {
         const workoutElement = document.createElement('card-element');
         updateWorkoutElement(workoutElement, workout, dialog);
         return workoutElement;
@@ -98,25 +98,24 @@ export function init(element) {
         return child.getAttribute('workoutId') === workout.id;
     });
 
-    currentWorkoutActivities.onChange((v) => {
-        console.log('currentWorkoutActivities changed', v);
-    });
-
     // this will populate the activities list in the dialog with the activities of the current workout
     const activitiesList = dialog.querySelector('.activitiesList');
     ReactiveContainer(currentWorkoutActivities, activitiesList, ({activity, identifier}) => {
-        console.log(activity.name);
-        const activityItem = document.createElement('button');
+        const activityItem = document.createElement('div');
         activityItem.classList.add('activityItem');
         activityItem.setAttribute('identifier', identifier);
-        activityItem.textContent = activity.name;
-        activityItem.addEventListener('click', async () => {
+        const label = document.createElement('p');
+        label.textContent = activity.name;
+        activityItem.appendChild(label);
+
+        const removeActivityButton = createIconButton('./assets/Trash 64.png', async () => {
             try {
                 const status = await removeActivityFromWorkout(editingWorkoutId.value, identifier);
             } catch (e) {
                 console.log(e);
             }
-        });
+        }, 'cancel-button');
+        activityItem.appendChild(removeActivityButton);
         return activityItem;
     }, (child, {activity, identifier}) => {
         return child.getAttribute('identifier') === identifier;
@@ -125,18 +124,23 @@ export function init(element) {
     const addActivitiesList = dialog.querySelector('.addActivitiesList');
     const activities = StateManager.activities;
     ReactiveContainer(activities, addActivitiesList, (activity) => {
-        const activityItem = document.createElement('button');
+        const activityItem = document.createElement('div');
         activityItem.classList.add('activityItem');
         activityItem.setAttribute('activityId', activity.id);
-        activityItem.textContent = activity.name;
-        activityItem.addEventListener('click', async () => {
+        const label = document.createElement('p');
+        label.textContent = activity.name;
+        activityItem.appendChild(label);
+
+        const addActivityIconButton = createIconButton('./assets/Plus 64.png', async () => {
             try {
                 const status = await addActivityToWorkout(editingWorkoutId.value, activity.id);
             } catch (e) {
                 console.log(e);
             }
             selectingActivity.value = false;
-        });
+        }, 'confirm-button');
+        activityItem.appendChild(addActivityIconButton);
+
         return activityItem;
     }, (child, activity) => {
         return child.getAttribute('activityId') === activity.id;
@@ -154,6 +158,7 @@ export function init(element) {
     cancelWorkout.addEventListener('click', (e) => {
         editingWorkoutId.value = null;
         e.preventDefault();
+        workoutForm.reset(); // clear the form
         dialog.close();
     });
 
@@ -165,9 +170,22 @@ export function init(element) {
         const description = workoutForm.querySelector('#workoutDescription').value;
         if (!description) return;
 
-        await createNewWorkout(name, description);
+        if (editingWorkoutId.value) {
+            // update the workout
+            await updateWorkoutData(editingWorkoutId.value, {
+                name,
+                description
+            })
+        } else {
+            // create a new workout
+            await createNewWorkout(name, description);
+        }
         workoutForm.reset(); // clear the form
         dialog.close();
+    });
+
+    editingWorkoutId.onChange((id) => {
+        submitWorkout.textContent = id ? 'Update' : 'Create';
     });
 
     selectingActivity.onChange((value) => {
@@ -178,6 +196,10 @@ export function init(element) {
     const addActivityButton = element.querySelector('#addActivity');
     addActivityButton.addEventListener('click', () => {
         selectingActivity.value = true;
+    });
+
+    editingWorkoutId.onChange((id) => {
+        addActivityButton.hidden = !id;
     });
 
     const cancelSelectActivity = element.querySelector('#cancelSelectActivity');

@@ -107,6 +107,12 @@ export async function updateActivity(id, { name, description, duration, imageUrl
     return 'Success';
 }
 
+export async function updateWorkout(id, { name, description }) {
+    const db = await dbConn;
+    await db.run(`UPDATE workout SET name = ?, description = ? WHERE id = ?;`, [name, description, id]);
+    return 'Success';
+}
+
 export async function addActivityToWorkout(workoutId, activityId) {
     const db = await dbConn;
     const identifier = uuid();
@@ -147,6 +153,10 @@ export async function deleteActivity(activityId) {
 export async function deleteWorkout(id) {
     const db = await dbConn;
     await db.run(`DELETE FROM workout WHERE id = ?;`, id);
+    
+    // Delete all records of this workout from workoutHistory
+    await db.run(`DELETE FROM workoutHistory WHERE workoutId = ?;`, id);
+
     return await getWorkouts();
 }
 

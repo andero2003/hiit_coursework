@@ -1,5 +1,3 @@
-import { Activity } from "../models/Activity.js";
-import { Workout } from "../models/Workout.js";
 import { StateManager } from "./StateLib.js";
 
 // this module is essentially just a facade for interacting with the server and database
@@ -9,9 +7,7 @@ export async function getActivities() {
         `/activity`,
     );
     const data = await activities.json();
-    StateManager.activities.value = data.map((activity) => {
-        return new Activity(activity.id, activity.name, activity.description, activity.duration, activity.imageUrl);
-    });
+    StateManager.activities.value = data;
 }
 
 export async function getWorkouts() {
@@ -19,24 +15,24 @@ export async function getWorkouts() {
         '/workout/',
     );
     const data = await workouts.json();
-
-    const activities = StateManager.activities.value;
     StateManager.workouts.value = data.map((workout) => {
-        const workoutObject = new Workout(workout.id, workout.name, workout.description);
-
-        const activitiesList = JSON.parse(workout.activities);
-        const activityIds = activitiesList.map((compositeId) => compositeId.split(' ')[0]);
-        const identifierIds = activitiesList.map((compositeId) => compositeId.split(' ')[1]);
-
-        for (let i = 0; i < activityIds.length; i++) {
-            const activity = activities.find((a) => a.id === activityIds[i]);
-            const identifier = identifierIds[i];
-            workoutObject.addActivity({
-                activity: activity,
-                identifier: identifier,
-            });
+        const workoutObject = {
+            id: workout.id,
+            name: workout.name,
+            description: workout.description,
+            activities: [],
         }
 
+        const activitiesList = JSON.parse(workout.activities);
+        workoutObject.activities = activitiesList.map((composite) => {
+            const activityId = composite.split(' ')[0];
+            const identifier = composite.split(' ')[1];
+            return {
+                activityId,
+                identifier,
+            }
+        });
+    
         return workoutObject;
     });
 }
@@ -71,18 +67,18 @@ export async function updateActivityData(activityId, newActivity) {
     return status;
 }
 
-export async function deleteActivity(activityId) {
+export async function deleteActivity(activityIdToDelete) {
     const status = await fetch(
-        `/activity/${activityId}`,
+        `/activity/${activityIdToDelete}`,
         {
             method: 'DELETE',
         },
     );
 
     // Reconcile state
-    StateManager.activities.value = StateManager.activities.value.filter((activity) => activity.id !== activityId);
+    StateManager.activities.value = StateManager.activities.value.filter((activity) => activity.id !== activityIdToDelete);
     StateManager.workouts.value = StateManager.workouts.value.map((workout) => {
-        workout.activities = workout.activities.filter(({ activity, identifier }) => activity.id !== activityId);
+        workout.activities = workout.activities.filter(({ activityId }) => activityIdToDelete !== activityId);
         return workout;
     });
     return status;
@@ -100,13 +96,37 @@ export async function createNewActivity(name, description, duration, imageUrl) {
         },
     );
     const data = await newActivity.json();
-    const activity = new Activity(data.id, data.name, data.description, data.duration, data.imageUrl);
 
     // Reconcile state
-    StateManager.activities.value = [...StateManager.activities.value, activity];
-    return activity;
+    StateManager.activities.value = [...StateManager.activities.value, data];
+    return data;
 }
 
+export async function updateWorkoutData(workoutId, newWorkout) {
+    const status = await fetch(
+        `/workout/${workoutId}`,
+        {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: newWorkout.name,
+                description: newWorkout.description,
+            }),
+        },
+    );
+
+    // Reconcile state
+    StateManager.workouts.value = StateManager.workouts.value.map((workout) => {
+        if (workout.id === workoutId) {
+            workout.name = newWorkout.name;
+            workout.description = newWorkout.description;
+        }
+        return workout;
+    });
+    return status;
+}
 
 export async function createNewWorkout(name, description) {
     const newWorkout = await fetch(
@@ -120,7 +140,12 @@ export async function createNewWorkout(name, description) {
         },
     );
     const data = await newWorkout.json();
-    const workout = new Workout(data.id, data.name, data.description);
+    const workout = {
+        id: data.id,
+        name: data.name,
+        description: data.description,
+        activities: [],
+    }
 
     // Reconcile state
     StateManager.workouts.value = [...StateManager.workouts.value, workout];
@@ -147,19 +172,22 @@ export async function addActivityToWorkout(workoutId, activityId) {
             method: 'POST',
         },
     );
-    const data = await status.json();
+    const identifier = await status.json();
 
     // Reconcile state
-    const workout = StateManager.workouts.value.find((workout) => workout.id === workoutId);
-    const activity = StateManager.activities.value.find((activity) => activity.id === activityId);
-    workout.addActivity({ activity, identifier: data });
     StateManager.workouts.value = StateManager.workouts.value.map((w) => {
         if (w.id === workoutId) {
-            return workout;
+            w.activities = [
+                ...w.activities,
+                { 
+                    activityId, 
+                    identifier 
+                },
+            ]
         }
         return w;
     });
-    return data;
+    return identifier;
 }
 
 export async function removeActivityFromWorkout(workoutId, workoutSpecificIdentifier) {
@@ -171,12 +199,9 @@ export async function removeActivityFromWorkout(workoutId, workoutSpecificIdenti
     );
     const data = await status.json();
 
-    // Reconcile state
-    const workout = StateManager.workouts.value.find((workout) => workout.id === workoutId);
-    workout.activities = workout.activities.filter(({ identifier }) => identifier !== workoutSpecificIdentifier);
     StateManager.workouts.value = StateManager.workouts.value.map((w) => {
         if (w.id === workoutId) {
-            return workout;
+            w.activities = w.activities.filter(({ identifier }) => identifier !== workoutSpecificIdentifier);
         }
         return w;
     });

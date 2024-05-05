@@ -2,6 +2,7 @@ button {
     margin: 8px;
 }
 
+
 #chooseWorkout>button {
     margin-left: 0;
     margin-right: 0;
@@ -9,32 +10,57 @@ button {
     width: 100%;
 }
 
+#title {
+    margin: 10px;
+}
+
 #currentWorkout .header {
-    display: flex;
-    justify-content: space-between;
+    margin: 0;
+    background-color: rgb(54, 54, 54);
+    width: 100%;
+    color: white;
+    text-align: center;
+    font-size: x-large;
+    padding: 8px;
+}
+
+#currentWorkout .header img {
+    width: 100%;
 }
 
 #currentWorkout h1 {
     padding: 8px;
     font-size: 30px;
 }
-
 #currentActivity {
+    margin: 8px;
+    margin-top: 16px;
+}
+
+#currentActivity h2 {
+    margin: 8px;
+    font-size: 28px;
+}
+
+#currentActivity p {
+    margin: 8px;
+    font-size: 26px;
+    margin-bottom: 16px;
+}
+
+#currentActivity img {
     width: 100%;
-    margin: 8px;
 }
 
-h4 {
-    margin: 8px;
+@media (min-width: 900px) {
+    #currentActivity img {
+        width: 400px;
+    }
 }
 
-#nextActivity {
-    margin: 8px;
+#nextActivityLabel {
+    margin: 16px;
     width: 60%;
-}
-
-img {
-    width: 100%;
 }
 
 progress {

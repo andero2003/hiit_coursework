@@ -36,7 +36,9 @@ export function init(element) {
         entryElement.innerHTML = `
             <div class="entry-header">
                 <h3>${workout.name}</h3>
-                <button class="cancel-button">Delete</button>
+                <button class="cancel-button">
+                    <img width="28px" src="./assets/Trash 64.png" alt="Delete"/>
+                </button>
             </div>
             <div class="entry-content">
                 <p>${entry.date}</p>

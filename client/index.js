@@ -1,5 +1,5 @@
 import { getActivities, getWorkoutHistory, getWorkouts } from "./modules/NetworkingService.js";
-import { StateManager } from "./modules/StateLib.js";
+import { State, StateManager } from "./modules/StateLib.js";
 
 const pages = [
     {
@@ -44,6 +44,8 @@ async function setupPages() {
         const page = pages[i];
 
         createSidebarButton(page);
+        
+        const showPageHeader = new State(true);
 
         const pageElement = document.createElement('page-element');
         pageElement.setAttribute('id', `section-${page.name}`);
@@ -53,9 +55,13 @@ async function setupPages() {
         const div = document.createElement('div');
         div.slot = 'content';
 
+        showPageHeader.onChange((value) => {
+            pageElement.shadowRoot.querySelector('header').hidden = !value;
+        });
+
         // load in the page specific content
         const module = await import(`./pages/${page.name}.js`);
-        module.init(div);
+        module.init(div, showPageHeader);
 
         pageElement.shadowRoot.querySelector('slot').append(div);
 
@@ -119,13 +125,3 @@ async function fetchData() {
 }
 
 fetchData();
-
-const modal = document.createElement('dialog');
-modal.innerHTML = `
-    <h1>Welcome to the Fitness App!</h1>
-    <p>Click on the sidebar to navigate to different pages.</p>
-    <p>Swipe from the left edge to open the sidebar on mobile.</p>
-    <button>Close</button>
-`;
-document.body.append(modal);
-//modal.showModal();

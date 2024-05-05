@@ -6,7 +6,6 @@ import { formatDuration } from "../modules/Utils.js";
 const content = `
 <link rel="stylesheet" href="/styles/global.css">
 <link rel="stylesheet" href="/pages/home.css">
-<h3>Welcome!</h3>
 <button class="confirm-button">Start Workout</button>
 <dialog>
     <h2>Choose a workout</h2>
@@ -16,23 +15,25 @@ const content = `
 </dialog>
 <section id="currentWorkout" hidden>
     <div class="header">
-        <h3></h3>
-        <button id="pauseWorkout" hidden>Pause</button>
-        <button class="cancel-button">Cancel</button>
+        <h2 id="title">Current Workout</h2>
+        <h4 id="status">Elapsed Time: 0:00</h4>
+        <div>
+            <button id="pauseWorkout" hidden>
+                <img width="32px" src="./assets/Pause 64.png" alt="Pause"/>
+            </button>
+            <button class="cancel-button">
+                <img width="32px" src="./assets/X Flat White 64.png" alt="Cancel"/>
+            </button>
+        </div>
     </div>
-    <h1 id="status"></h1>
-    <section id="currentActivity" class="card" hidden>
+    <section id="currentActivity" hidden>
+        <h2>Activity</h2>
         <progress value="0" max="100"></progress>
         <p id="remaining">Remaining Time</p>
-        <h2>Activity</h2>
-        <p id="description">Activity description</p>
+        <p id="description" hidden>Activity description</p>
         <img src="" alt="Activity Image">
     </section>
-    <h4>Next Activity</h4>
-    <section id="nextActivity" class="card" hidden>
-        <h2>Activity</h2>
-        <img src="" alt="Activity Image">
-    </section>
+    <h2 id="nextActivityLabel">Next Activity</h2>
 </section>
 `
 
@@ -65,10 +66,9 @@ const currentActivityProgress = new CompoundState(use => {
 });
 
 // main page initialization
-export function init(element) {
+export function init(element, showPageHeader) {
     element.innerHTML = content;
 
-    const title = element.querySelector('h3');
     const pauseWorkoutButton = element.querySelector('#pauseWorkout');
     const startWorkoutButton = element.querySelector('.confirm-button');
     const chooseWorkoutList = element.querySelector('#chooseWorkout');
@@ -82,6 +82,8 @@ export function init(element) {
     });
 
     currentWorkout.onChange((workout) => {
+        showPageHeader.value = workout === null;
+
         if (!workout) { // clean up all the state from the previous workout if it is changed to null (meaning a workout has ended)
             cleanupManager.clean();        
         }
@@ -90,19 +92,19 @@ export function init(element) {
         dialog.close();
         currentWorkoutSection.hidden = workout === null;
         startWorkoutButton.hidden = workout !== null;
-        title.hidden = workout !== null;
     
         // update the workout in local storage to persist the state between page reloads
         localStorage.setItem('workout', JSON.stringify(workout));
     });
 
     running.onChange((isRunning) => {
-        pauseWorkoutButton.textContent = isRunning ? 'Pause' : 'Resume';
+        pauseWorkoutButton.querySelector('img').src = isRunning ?
+            './assets/Pause 64.png' : './assets/Arrow Right 64.png';
     });
 
     const activitySection = element.querySelector('#currentActivity');
     elapsed.onChange((time) => {
-        currentWorkoutSection.querySelector('h1').textContent = `Elapsed Time: ${formatDuration(time)}`;
+        currentWorkoutSection.querySelector('#status').textContent = `Elapsed Time: ${formatDuration(time)}`;
         const remainingLabel = activitySection.querySelector('#remaining');
         const activity = currentActivity.value;
         if (!activity) {
@@ -133,15 +135,7 @@ export function init(element) {
     });
 
     nextActivity.onChange((activity) => {
-        const activitySection = element.querySelector('#nextActivity');
-        if (!activity) {
-            activitySection.hidden = true;
-            return;
-        }
-        activitySection.hidden = false;
-
-        activitySection.querySelector('h2').textContent = activity.name;
-        activitySection.querySelector('img').src = activity.imageUrl;
+        element.querySelector('#nextActivityLabel').textContent = activity ? `Next: ${activity.name}` : 'No more activities';
     });
 
     // handle progress bar for the current activity
@@ -254,7 +248,7 @@ function startTimer() {
 
 function startWorkout(element, workout, restoredState) {
     const currentWorkoutSection = element.querySelector('#currentWorkout');
-    const title = currentWorkoutSection.querySelector('h3');
+    const title = currentWorkoutSection.querySelector('#title');
     title.textContent = workout.name;
 
     const cancelWorkoutButton = currentWorkoutSection.querySelector('.cancel-button');

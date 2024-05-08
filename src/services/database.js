@@ -12,6 +12,7 @@ async function init() {
         verbose: true,
     })
 
+    // Setup the tables if they don't exist
     await db.exec(`CREATE TABLE IF NOT EXISTS workout (
         id TEXT PRIMARY KEY,
         name TEXT DEFAULT 'New workout',
@@ -137,6 +138,8 @@ export async function removeActivityFromWorkout(workoutId, workoutSpecificIdenti
 export async function deleteActivity(activityId) {
     const db = await dbConn;
     const workouts = await getWorkouts();
+
+    // Remove the activity from all workouts that use it
     for (const workout of workouts) {
         const workoutId = workout.id;
         const activities = JSON.parse(workout.activities);
@@ -153,7 +156,7 @@ export async function deleteActivity(activityId) {
 export async function deleteWorkout(id) {
     const db = await dbConn;
     await db.run(`DELETE FROM workout WHERE id = ?;`, id);
-    
+
     // Delete all records of this workout from workoutHistory
     await db.run(`DELETE FROM workoutHistory WHERE workoutId = ?;`, id);
 

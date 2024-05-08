@@ -181,7 +181,7 @@ const activities = new State([]);
 
 // single source of truth for the entire application state
 export const StateManager = {
-    currentPage: new State('home'),
+    currentPage: new State('start'),
     sidebarOpen: new State(false),
     workouts: workouts,
     activities: activities,

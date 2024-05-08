@@ -1,4 +1,3 @@
-
 @media (min-width: 900px) {
     section.page {
         margin-left: calc(16% + 24px);
@@ -10,6 +9,18 @@ header {
     width: auto;
     height: 150px;
     background-color: rgb(54, 54, 54);
+}
+
+header button {
+    padding: 0px;
+    margin: 8px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+@media (min-width: 900px) {
+    header button {
+        display: none;
+    }
 }
 
 header h1 {
@@ -32,7 +43,7 @@ h1 {
 div.grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    grid-auto-rows: 1fr; 
+    grid-auto-rows: 1fr;
 }
 
 button {
@@ -45,7 +56,9 @@ button {
 }
 
 @media (min-width: 900px) {
-    #addActivity, #addWorkout {
+
+    #addActivity,
+    #addWorkout {
         width: 250px;
     }
 }

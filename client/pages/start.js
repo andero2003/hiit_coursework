@@ -5,7 +5,7 @@ import { formatDuration } from "../modules/Utils.js";
 
 const content = `
 <link rel="stylesheet" href="/styles/global.css">
-<link rel="stylesheet" href="/pages/home.css">
+<link rel="stylesheet" href="/pages/start.css">
 <button class="confirm-button">Start Workout</button>
 <dialog>
     <h2>Choose a workout</h2>
@@ -85,14 +85,14 @@ export function init(element, showPageHeader) {
         showPageHeader.value = workout === null;
 
         if (!workout) { // clean up all the state from the previous workout if it is changed to null (meaning a workout has ended)
-            cleanupManager.clean();        
+            cleanupManager.clean();
         }
 
         // default element visibility depending on the workout state
         dialog.close();
         currentWorkoutSection.hidden = workout === null;
         startWorkoutButton.hidden = workout !== null;
-    
+
         // update the workout in local storage to persist the state between page reloads
         localStorage.setItem('workout', JSON.stringify(workout));
     });
@@ -145,7 +145,7 @@ export function init(element, showPageHeader) {
         progressElement.value = 100 - progress * 100;
     });
 
-    // this will populate the list of workouts to choose from on home page, updating dynamically whenever the workouts list changes
+    // this will populate the list of workouts to choose from on the start page, updating dynamically whenever the workouts list changes
     ReactiveContainer(StateManager.workoutsState, chooseWorkoutList, (workout) => {
         const workoutElement = document.createElement('button');
         workoutElement.setAttribute('workoutId', workout.id);
@@ -180,24 +180,24 @@ export function init(element, showPageHeader) {
 function recordWorkout(workoutId) {
     const start = startTime.value;
     const end = new Date();
-    
-    const formattedDate = (date) =>        
+
+    const formattedDate = (date) =>
         date.toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric',
         }
-    )
+        )
 
-    const formattedTime = (date) => 
+    const formattedTime = (date) =>
         date.toLocaleString('en-US', {
             hour: 'numeric',
             minute: 'numeric',
             second: 'numeric',
             hour12: true,
         }
-    ) 
+        )
 
     recordWorkoutInHistory(workoutId, formattedDate(start), formattedTime(start), formattedTime(end));
     startTime.value = null;

@@ -3,9 +3,9 @@ import { State, StateManager } from "./modules/StateLib.js";
 
 const pages = [
     {
-        name: 'home',
-        title: 'Home',
-        image: './assets/Home 64.png',
+        name: 'start',
+        title: 'Start',
+        image: './assets/Arrow Right 64.png',
     },
     {
         name: 'workouts',
@@ -44,7 +44,7 @@ async function setupPages() {
         const page = pages[i];
 
         createSidebarButton(page);
-        
+
         const showPageHeader = new State(true);
 
         const pageElement = document.createElement('page-element');
@@ -55,6 +55,7 @@ async function setupPages() {
         const div = document.createElement('div');
         div.slot = 'content';
 
+        // showPageHeader state is injected into the page so internal logic (e.g workout starts) can toggle the header
         showPageHeader.onChange((value) => {
             pageElement.shadowRoot.querySelector('header').hidden = !value;
         });
@@ -69,6 +70,16 @@ async function setupPages() {
         pageElement.hidden = StateManager.currentPage.value !== page.name;
         StateManager.currentPage.onChange((newPage) => {
             pageElement.hidden = newPage !== page.name;
+        });
+
+        // navigation bar toggle
+        const navBarToggle = pageElement.shadowRoot.querySelector('header button');
+        navBarToggle.addEventListener('click', () => {
+            StateManager.sidebarOpen.value = !StateManager.sidebarOpen.value;
+        });
+
+        StateManager.sidebarOpen.onChange((value) => {
+            navBarToggle.classList.toggle('open', value);
         });
 
         document.querySelector('body').append(pageElement);

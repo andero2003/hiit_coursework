@@ -74,3 +74,12 @@ VALUES (
         'https://media3.giphy.com/media/A6aHBCFqlE0Rq/200w.gif?cid=6c09b952bn31ec0j7544tmdrgnjjx7r5i9dwwh18qgfhshbn&ep=v1_gifs_search&rid=200w.gif&ct=g',
         30
     );
+
+INSERT INTO workout (id, name, description, activities)
+VALUES (
+        '1',
+        'Morning Routine',
+        'Start your day with this energizing workout routine.',
+        '["1 1", "2 2", "3 3", "4 4", "5 5", "6 6", "7 7"]'
+    );
+

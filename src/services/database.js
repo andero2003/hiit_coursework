@@ -10,29 +10,9 @@ async function init() {
         filename: './workout.sqlite',
         driver: sqlite3.Database,
         verbose: true,
-    })
+    });
 
-    // Setup the tables if they don't exist
-    await db.exec(`CREATE TABLE IF NOT EXISTS workout (
-        id TEXT PRIMARY KEY,
-        name TEXT DEFAULT 'New workout',
-        description TEXT DEFAULT 'No description',
-        activities JSON DEFAULT '[]'
-    );`);
-    await db.exec(`CREATE TABLE IF NOT EXISTS activity (
-        id TEXT PRIMARY KEY,
-        name TEXT,
-        description TEXT,
-        imageUrl TEXT DEFAULT 'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/a93c82108677535.5fc3684e78f67.gif',
-        duration INTEGER DEFAULT 30
-    );`);
-    await db.exec(`CREATE TABLE IF NOT EXISTS workoutHistory (
-        id TEXT PRIMARY KEY,
-        workoutId TEXT,
-        date TEXT,
-        startTime TEXT,
-        endTime TEXT
-    )`)
+    await db.migrate({ migrationsPath: './db/migrations-sqlite'});
 
     return db;
 }

@@ -2,8 +2,10 @@
 
 ## Getting Started
 To run the application, run
-`npm install`
-`npm start`
+```bash
+npm install
+npm start
+```
 
 ## Key Features
 This section introduces the main functionalities of the HIIT web application.
